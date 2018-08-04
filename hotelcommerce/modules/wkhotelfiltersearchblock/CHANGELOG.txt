@@ -1,0 +1,12 @@
+####################################
+# V1.0.0 to V1.0.1
+####################################
+
+## Improved/changed features:
+
+[+] FO : Changes are done for selleting "show/hide only one active hotel" , added in location search panel in Hotel General Settings.
+
+
+## Update Policy
+
+- Mobule need only file update, can be updated only by UPLOADING new version on module

@@ -1,0 +1,7 @@
+####################################
+# V1.0.2 to V1.0.3
+####################################
+
+## Bug/Issues Resolved:
+
+[+] CO : Resolved :: HotelHelper::getPsProducts() function used now in insertDefaultHotelFeaturesEntries().[Was issue on installing module while Qloapps installation]

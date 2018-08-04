@@ -1,0 +1,18 @@
+####################################
+# V1.0.0 to V1.1.0
+####################################
+
+## Bug/Issues Resolved:
+
+[+] BO : Resolved :: Image name issue issue while saving new testimonial
+[+] BO : Resolved :: Tools::displayError() replaced with $this->l() in admin AdminTestimonialsModuleSettingController
+
+
+## Improved/changed features
+
+- [BO] : getTestimonialData() improved in WkHotelTestimonialData.php
+
+
+## Update Policy
+
+- Database changed, Module need upload new file then UNINSTALL and re-installation.
