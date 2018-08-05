@@ -24,10 +24,13 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12 testimonialPersonDetail">
-                                            {if isset($tesimonial.testimonial_image) && $tesimonial.testimonial_image}
-                                                <img src="{$module_dir}views/img/hotels_testimonials_img/{$tesimonial.testimonial_image}" class="testimonialPersonImg">
+                                            {if isset($tesimonial.id_testimonial_block) 
+                                                && $tesimonial.id_testimonial_block
+                                                && file_exists("{$ps_module_dir}/wktestimonialblock/views/img/hotels_testimonials_img/{$tesimonial.id_testimonial_block}.jpg")
+                                            }
+                                                <img width="60px" src="{$module_dir}views/img/hotels_testimonials_img/{$tesimonial.id_testimonial_block}.jpg" class="testimonialPersonImg">
                                             {else}
-                                                <img src="{$module_dir}views/img/hotels_testimonials_img/default.jpg" class="testimonialPersonImg">
+                                                <img  width="60px" src="{$module_dir}views/img/default-user.jpg" class="testimonialPersonImg">
                                             {/if}
                                             <p class="testimonialPersonName">{$tesimonial.name}</p>
                                             <p class="testimonialPersonDesig">{$tesimonial.designation}</p>

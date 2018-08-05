@@ -4,7 +4,6 @@ class WkHotelTestimonialData extends ObjectModel
     public $name;
     public $designation;
     public $testimonial_content;
-    public $testimonial_image;
     public $active;
     public $position;
     public $date_add;
@@ -17,7 +16,6 @@ class WkHotelTestimonialData extends ObjectModel
             'name' => array('type' => self::TYPE_STRING),
             'designation' => array('type' => self::TYPE_STRING),
             'testimonial_content' => array('type' => self::TYPE_STRING),
-            'testimonial_image' => array('type' => self::TYPE_STRING),
             'active' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
             'position' => array('type' => self::TYPE_INT, 'validate' => 'isInt'),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
@@ -26,8 +24,7 @@ class WkHotelTestimonialData extends ObjectModel
 
     public function getTestimonialData($active = 2)
     {
-        $sql = 'SELECT `name`, `designation`, `testimonial_content`, `testimonial_image`, `active`, `position`
-                FROM `'._DB_PREFIX_.'htl_testimonials_block_data` WHERE 1';
+        $sql = 'SELECT * FROM `'._DB_PREFIX_.'htl_testimonials_block_data` WHERE 1';
         if ($active != 2) {
             $sql .= ' AND `active` = '.(int) $active;
         }
@@ -55,7 +52,7 @@ class WkHotelTestimonialData extends ObjectModel
         $position = DB::getInstance()->getValue(
             'SELECT MAX(`position`) FROM `'._DB_PREFIX_.'htl_testimonials_block_data`'
         );
-        $result = (is_numeric($position)) ? $position : 0;
+        $result = (is_numeric($position)) ? $position : -1;
         return $result + 1;
     }
 

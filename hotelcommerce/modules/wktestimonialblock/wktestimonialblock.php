@@ -80,6 +80,7 @@ class WkTestimonialBlock extends Module
                 'HOTEL_TESIMONIAL_BLOCK_HEADING' => $HOTEL_TESIMONIAL_BLOCK_HEADING,
                 'HOTEL_TESIMONIAL_BLOCK_CONTENT' => $HOTEL_TESIMONIAL_BLOCK_CONTENT,
                 'testimonials_data' => $testimonials_data,
+                'ps_module_dir' => _PS_MODULE_DIR_,
             )
         );
         return $this->display(__FILE__, 'wktestimonialblock.tpl');
@@ -207,10 +208,9 @@ class WkTestimonialBlock extends Module
 
     public function deleteTestimonialUserImage()
     {
-        $uploadedImg = glob(_PS_MODULE_DIR_.$this->name.'/views/img/hotels_testimonials_img/*.jpg');
-        if ($uploadedImg) {
-            foreach ($uploadedImg as $interiorImg) {
-                unlink($interiorImg);
+        if ($uploadedImg = glob(_PS_MODULE_DIR_.$this->name.'/views/img/hotels_testimonials_img/*.jpg')) {
+            foreach ($uploadedImg as $img) {
+                unlink($img);
             }
         }
         return true;

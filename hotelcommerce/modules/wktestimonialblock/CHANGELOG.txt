@@ -12,6 +12,8 @@
 
 - [BO] : getTestimonialData() improved in WkHotelTestimonialData.php
 
+- [CO] : image column remove from htl_testimonials_block_data table
+
 
 ## Update Policy
 

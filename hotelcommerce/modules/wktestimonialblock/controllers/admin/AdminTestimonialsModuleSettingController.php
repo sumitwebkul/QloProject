@@ -43,11 +43,10 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
                 'title' => $this->l('ID'),
                 'align' => 'center',
             ),
-            'image' => array(
+            'date_upd' => array(
                 'title' => $this->l('Person Image'),
                 'align' => 'center',
-                'image' => 'testimonial_image',
-                'search' => false
+                'callback' => 'getTestimonialImage',
             ),
             'active' => array(
                 'title' => $this->l('Active'),
@@ -87,17 +86,29 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
         );
     }
 
+    public function getTestimonialImage($echo, $row)
+    {
+        $image = '';
+        if ($echo) {
+            $imgUrl = _PS_MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/'.
+            $row['id_testimonial_block'].'.jpg';
+            if (file_exists($imgUrl)) {
+                $modImgUrl = _MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/'.
+                $row['id_testimonial_block'].'.jpg';
+                $image = "<img class='img-thumbnail img-responsive' style='max-width:70px' src='".$modImgUrl."'>";
+            }
+        }
+        if ($image == '') {
+            $modImgUrl = _MODULE_DIR_.$this->module->name.'/views/img/default-user.jpg';
+            $image = "<img class='img-thumbnail img-responsive' style='max-width:70px' src='".$modImgUrl."'>";
+        }
+        return $image;
+    }
+
     public function renderList()
     {
         $this->addRowAction('edit');
         $this->addRowAction('delete');
-
-        $ps_testimonials_img_dir = _PS_MODULE_DIR_.'wktestimonialblock/views/img/hotels_testimonials_img';
-        $this->context->smarty->assign('ps_testimonials_img_dir', $ps_testimonials_img_dir);
-
-        $testimonials_img_dir = _MODULE_DIR_.'wktestimonialblock/views/img/hotels_testimonials_img';
-        $this->context->smarty->assign('testimonials_img_dir', $testimonials_img_dir);
-
         return parent::renderList();
     }
 
@@ -147,7 +158,6 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
                     'display_image' => true,
                     'image' => $img_exist ? $image : false,
                     'hint' => $this->l('Upload an image of the person to whom this testimonial belongs.'),
-                    'required' => true,
                 ),
                 array(
                     'type' => 'switch',
@@ -200,7 +210,7 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
         if ($testimonial_content == '') {
             $this->errors[] = $this->l('Testimonial content is a required field.');
         }
-        if ($_FILES['testimonial_image'] && $_FILES['testimonial_image']['tmp_name']) {
+        if (isset($_FILES['testimonial_image']) && $_FILES['testimonial_image']['tmp_name']) {
             $error = HotelImage::validateImage($_FILES['testimonial_image']);
             if ($error) {
                 $this->errors[] = $this->l('Image format not recognized, allowed formats are: .gif, .jpg, .png', false);
@@ -219,16 +229,12 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
             $objTestimonialData->designation = $person_designation;
             $objTestimonialData->testimonial_content = $testimonial_content;
             $objTestimonialData->active = Tools::getValue('active');
-            if (!$_FILES['testimonial_image']['size']) {
-                $objTestimonialData->testimonial_image = 0;
-            }
-            $objTestimonialData->save();
-            if ($_FILES['testimonial_image']['size']) {
-                $image_name = $objTestimonialData->id.'.jpg';
-                $testimonial_img_path = _PS_MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/';
-                ImageManager::resize($_FILES['testimonial_image']['tmp_name'], $testimonial_img_path.$image_name);
-                $objTestimonialData->testimonial_image = $image_name;
-                $objTestimonialData->save();
+            if ($objTestimonialData->save()) {
+                if ($_FILES['testimonial_image']['size']) {
+                    $testimonial_img_path = _PS_MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/'.
+                    $objTestimonialData->id.'.jpg';
+                    ImageManager::resize($_FILES['testimonial_image']['tmp_name'], $testimonial_img_path);
+                }
             }
             if (Tools::getValue("id")) {
                 Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);

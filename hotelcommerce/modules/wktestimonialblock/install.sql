@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS `PREFIX_htl_testimonials_block_data` (
 	`name` varchar(255) NOT NULL,
 	`designation` text NOT NULL,
 	`testimonial_content` text NOT NULL,
-	`testimonial_image`  varchar(255) DEFAULT '',
 	`active` tinyint(1) NOT NULL,
   	`position` int(10) unsigned NOT NULL DEFAULT '0',
 	`date_add` datetime NOT NULL,

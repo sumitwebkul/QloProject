@@ -32,15 +32,18 @@
 
 ## Bug/Issues Resolved:
 
-[+] CO : Resolved :: hotelreservationsystem:: Hotel images not saved while saving hotel details.
+[-] BO : Resolved :: hotelreservationsystem:: Hotel images not saved while saving hotel details.
 [-] BO : Resolved :: hotelreservationsystem - $max_phone_digit is undefined issue resolved on hotel creation form.
+[-] BO : Resolved :: hotelreservationsystem:: HotelBookingDetail.php : phone number sent as string '0987654321'from 0987654321. Giving error while installing Qloapps with php7.0.0 .
+[-] BO : Resolved :: wktestimonialblock:: Error while saving or updating testimonials by admin.
+[-] BO : Resolved :: array_column is removed from AdminProductController.
+
+[-] FO : Resolved :: Undefined index: total_rooms_in_cart at blockcart.tpl.
+
+[-] CO : Resolved :: RecursiveDirectoryIterator::__construct(/var/www/html/themes/hotel-theme/): failed to open dir While installation.
+[-] CO : Resolved :: Notice on Calls to functions Product::getProducts() in wkhoteleoom and Product::getSimpleProducts() in HotelHelper.php while installation of Qloapps.[Trying to get property of non-object]
+[-] CO : Resolved :: Theme compilation issue on ajax while Qloapps installation
 [-] CO : Resolved :: hotelreservationsystem - Parent:: replaced with parent:: in classes/hotelHotelBranchInformation.php which was creating problems in installation.
-[+] CO : Resolved :: hotelreservationsystem:: HotelBookingDetail.php : phone number sent as string '0987654321'from 0987654321. Giving error while installing Qloapps with php7.0.0 .
-[+] CO : Resolved :: wktestimonialblock:: Error while saving or updating testimonials by admin.
-[+] BO : Resolved :: array_column is removed from AdminProductController.
-[+] CO : Resolved :: RecursiveDirectoryIterator::__construct(/var/www/html/themes/hotel-theme/): failed to open dir While installation.
-[+] CO : Resolved :: Notice on Calls to functions Product::getProducts() in wkhoteleoom and Product::getSimpleProducts() in HotelHelper.php while installation of Qloapps.[Trying to get property of non-object]
-[+] CO : Resolved :: Theme compilation issue on ajax while Qloapps installation
 
 
 ####################################
