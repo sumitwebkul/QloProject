@@ -199,16 +199,12 @@ class blockcart extends Module
         if (Configuration::get('PS_CATALOG_MODE')) {
             return;
         }
-
+        $total_rooms = 0;
         if ($this->context->cart->id) {
-            $result = $this->getHotelCartBookingData();
-            $cart_htl_data = $result['cart_htl_data'];
-            $total_rooms = $result['total_rooms_in_cart'];
-            $this->smarty->assign(array(
-                'cart_htl_data' => $cart_htl_data,
-                'total_rooms_in_cart' => $total_rooms,
-                )
-            );
+            if ($result = $this->getHotelCartBookingData()) {
+                $this->smarty->assign('cart_htl_data', $result['cart_htl_data']);
+                $total_rooms = $result['total_rooms_in_cart'];
+            }
         }
 
         $warning_num = Configuration::get('WK_ROOM_LEFT_WARNING_NUMBER');
@@ -235,6 +231,7 @@ class blockcart extends Module
 
         // @todo this variable seems not used
         $this->smarty->assign(array(
+            'total_rooms_in_cart' => $total_rooms,
             'max_order_date' => $max_order_date,
             'warning_num' => $warning_num,
             'module_dir' => _MODULE_DIR_,
