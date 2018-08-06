@@ -1,0 +1,8 @@
+-------------------------------
+# Change Log V1.0.0 to V1.0.1
+-------------------------------
+
+## Improved/Changed features:
+
+- [+]CO : Unnecessary files wkpaypal.php and paymentdetailslink.tpl are removed.
+- [+]CO : Unnecessary table wkpaypal is removed.

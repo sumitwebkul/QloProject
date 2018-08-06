@@ -71,24 +71,24 @@
 		                <form method="POST" id="search_hotel_block_form">
 		                    {if isset($location_enable) && $location_enable}
 		                        <div class="form-group
-								{if count($all_hotels_info) <= 1 && !$show_only_active_htl}
+								{if $totalActiveHotels <= 1 && !$show_only_active_htl}
 									col-sm-3
 								{else}
 									col-sm-6 col-lg-3
 								{/if}">
-		                            <input type="text" class="form-control header-rmsearch-input {if count($all_hotels_info) <= 1}default-cursor{/if}"  id="hotel_location" name="hotel_location" autocomplete="off" placeholder="Hotel Location" {if isset($all_hotels_info[0]['location'])}value="{$all_hotels_info[0]['location']}"{/if} {if count($all_hotels_info) <= 1}disabled{/if}>
+		                            <input type="text" class="form-control header-rmsearch-input {if $totalActiveHotels <= 1}default-cursor{/if}"  id="hotel_location" name="hotel_location" autocomplete="off" placeholder="Hotel Location" {if isset($search_data['location'])}value="{$search_data['location']}"{/if} {if $totalActiveHotels <= 1}disabled{/if}>
 		                            <div class="dropdown">
 		                                <ul class="location_search_results_ul"></ul>
 		                            </div>
 		                        </div>
 		                    {/if}
-		                    <div class="form-group {if count($all_hotels_info) <= 1 && !$show_only_active_htl} hidden {/if}
+		                    <div class="form-group {if $totalActiveHotels <= 1 && !$show_only_active_htl} hidden {/if}
 							{if isset($location_enable) && $location_enable}
 								col-sm-6 col-lg-3
 							{else}
 								col-sm-3
 							{/if}">
-								{if isset($all_hotels_info) && count($all_hotels_info) > 1}
+								{if isset($all_hotels_info) && $totalActiveHotels > 1}
 									<div class="dropdown">
 										<button class="form-control header-rmsearch-input {if isset($error) && $error == 1}error_border{/if}" type="button" data-toggle="dropdown">
 											{if isset($search_data)}
@@ -122,7 +122,7 @@
 								{/if}
 		                    </div>
 		                    <div class="form-group
-							{if count($all_hotels_info) <= 1}
+							{if $totalActiveHotels <= 1}
 								{if isset($location_enable) && $location_enable && $show_only_active_htl}
 									col-sm-4 col-lg-2
 								{elseif isset($location_enable) && !$location_enable && !$show_only_active_htl}

@@ -14,16 +14,16 @@
             {if isset($location_enable) && $location_enable}
                 <div class="form-group hotel_location_div">
                     <label class="control-label" for="">{l s='Hotel Location' mod='wkroomsearchblock'}</label>
-                    <input class="form-control {if count($all_hotels_info) <= 1}default-cursor{/if}" placeholder="Enter a city, state, country name" type="text" id="hotel_location" name="hotel_location" autocomplete="off" {if isset($search_data)}value="{$search_data['location']}" city_cat_id="{$search_data['parent_data']['id_category']}"{/if} {if count($all_hotels_info) <= 1}disabled{/if}/>
+                    <input class="form-control {if $totalActiveHotels <= 1}default-cursor{/if}" placeholder="Enter a city, state, country name" type="text" id="hotel_location" name="hotel_location" autocomplete="off" {if isset($search_data)}value="{$search_data['location']}" city_cat_id="{$search_data['parent_data']['id_category']}"{/if} {if $totalActiveHotels <= 1}disabled{/if}/>
                     <div class="dropdown">
                         <ul class="location_search_results_ul"></ul>
                     </div>
                 </div>
             {/if}
 
-            <div class="form-group htl_nm_cont {if count($all_hotels_info) <= 1 && !$show_only_active_htl}hidden{/if}">
+            <div class="form-group htl_nm_cont {if $totalActiveHotels <= 1 && !$show_only_active_htl}hidden{/if}">
                 <label class="control-label" for="">{l s='Hotel Name' mod='wkroomsearchblock'}</label>
-                {if isset($all_hotels_info) && count($all_hotels_info) > 1}
+                {if isset($all_hotels_info) && $totalActiveHotels > 1}
                     <div class="dropdown">
                         <button class="btn btn-default hotel_cat_id_btn dropdown-toggle" type="button" data-toggle="dropdown">
                             {if isset($search_data)}

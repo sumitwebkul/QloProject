@@ -34,7 +34,7 @@ class blockcart extends Module
     {
         $this->name = 'blockcart';
         $this->tab = 'front_office_features';
-        $this->version = '1.6.0';
+        $this->version = '1.6.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -484,7 +484,7 @@ class blockcart extends Module
                                 $cart_htl_data[$type_key]['date_diff'][$date_join]['data_form'] = date('Y-m-d', strtotime($data_v['date_from']));
                                 $cart_htl_data[$type_key]['date_diff'][$date_join]['data_to'] = date('Y-m-d', strtotime($data_v['date_to']));
                                 $cart_htl_data[$type_key]['date_diff'][$date_join]['num_days'] = $num_days;
-                                
+
                                 // By webkul New way to calculate product prices with feature Prices
                                 $roomTypeDateRangePrice = HotelRoomTypeFeaturePricing::getRoomTypeTotalPrice($type_value['id_product'], $data_v['date_from'], $data_v['date_to']);
                                 if (!$price_tax) {

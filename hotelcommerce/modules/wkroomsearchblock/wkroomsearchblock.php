@@ -81,26 +81,27 @@ class wkroomsearchblock extends Module
                 }
             }
             $hotel_branch_obj = new HotelBranchInformation();
-            $hotel_info = $hotel_branch_obj->hotelBranchesInfo(0, 1, 1);
-            foreach ($hotel_info as &$hotel) {
-                $maxOrderDate = HotelOrderRestrictDate::getMaxOrderDate($hotel['id']);
-                $hotel['location'] = $hotel['city'];
-                if (isset($hotel['state_name'])) {
-                    $hotel['location'] .= ', '.$hotel['state_name'];
+            if ($hotel_info = $hotel_branch_obj->hotelBranchesInfo(0, 1, 1)) {
+                foreach ($hotel_info as &$hotel) {
+                    $maxOrderDate = HotelOrderRestrictDate::getMaxOrderDate($hotel['id']);
+                    $hotel['location'] = $hotel['city'];
+                    if (isset($hotel['state_name'])) {
+                        $hotel['location'] .= ', '.$hotel['state_name'];
+                    }
+                    $hotel['location'] .= ', '.$hotel['country_name'];
+
+                    $hotel['max_order_date'] = date('Y-m-d', strtotime($maxOrderDate));
                 }
-                $hotel['location'] .= ', '.$hotel['country_name'];
+                $this->context->smarty->assign('hotel_name', $hotel_info);
+                $this->context->smarty->assign('header_block_title', Configuration::get('WK_TITLE_HEADER_BLOCK'));
+                $this->context->smarty->assign('header_block_content', Configuration::get('WK_CONTENT_HEADER_BLOCK'));
+                $this->context->smarty->assign('location_enable', Configuration::get('WK_HOTEL_LOCATION_ENABLE'));
+                $this->context->smarty->assign('show_only_active_htl', Configuration::get('WK_DISPLAY_ONLY_ACTIVE_HOTEL'));
 
-                $hotel['max_order_date'] = date('Y-m-d', strtotime($maxOrderDate));
+                $this->context->controller->addJS(_PS_MODULE_DIR_.'hotelreservationsystem/views/js/roomSearchBlock.js');
+                $this->context->controller->addCSS(_PS_MODULE_DIR_.'hotelreservationsystem/views/css/datepickerCustom.css');
+                $this->context->controller->addCSS(_PS_MODULE_DIR_.'hotelreservationsystem/views/css/searchblock.css');
             }
-            $this->context->smarty->assign('hotel_name', $hotel_info);
-            $this->context->smarty->assign('header_block_title', Configuration::get('WK_TITLE_HEADER_BLOCK'));
-            $this->context->smarty->assign('header_block_content', Configuration::get('WK_CONTENT_HEADER_BLOCK'));
-            $this->context->smarty->assign('location_enable', Configuration::get('WK_HOTEL_LOCATION_ENABLE'));
-            $this->context->smarty->assign('show_only_active_htl', Configuration::get('WK_DISPLAY_ONLY_ACTIVE_HOTEL'));
-
-            $this->context->controller->addJS(_PS_MODULE_DIR_.'hotelreservationsystem/views/js/roomSearchBlock.js');
-            $this->context->controller->addCSS(_PS_MODULE_DIR_.'hotelreservationsystem/views/css/datepickerCustom.css');
-            $this->context->controller->addCSS(_PS_MODULE_DIR_.'hotelreservationsystem/views/css/searchblock.css');
         }
     }
 

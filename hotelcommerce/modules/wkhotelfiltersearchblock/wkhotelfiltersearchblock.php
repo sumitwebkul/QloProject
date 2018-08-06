@@ -116,8 +116,15 @@ class wkhotelfiltersearchblock extends Module
             }
             $search_data['location'] .= ', '.$search_data['htl_dtl']['country_name'];
 
-            $hotel_info = $hotel_branch_obj->hotelBranchesInfo(0, 1);
-
+            $locationEnabled = Configuration::get('WK_HOTEL_LOCATION_ENABLE');
+            if ($locationEnabled) {
+                $hotel_info = $hotel_branch_obj->hotelBranchesInfo(0, 1);
+                $totalActiveHotels = count($hotel_info);
+                $hotel_info = $hotel_branch_obj->hotelBranchInfoByCategoryId($htl_id_category);
+            } else {
+                $hotel_info = $hotel_branch_obj->hotelBranchesInfo(0, 1);
+                $totalActiveHotels = count($hotel_info);
+            }
             foreach ($hotel_info as &$hotel) {
                 $maxOrderDate = HotelOrderRestrictDate::getMaxOrderDate($hotel['id']);
                 $hotel['max_order_date'] = date('Y-m-d', strtotime($maxOrderDate));
@@ -125,11 +132,12 @@ class wkhotelfiltersearchblock extends Module
             $max_order_date = HotelOrderRestrictDate::getMaxOrderDate($id_hotel);
             $this->context->smarty->assign(
                 array(
+                    'totalActiveHotels' => $totalActiveHotels,
                     'booking_date_to' => $date_to,
                     'search_data' => $search_data,
                     'all_hotels_info' => $hotel_info,
                     'show_only_active_htl' => Configuration::get('WK_DISPLAY_ONLY_ACTIVE_HOTEL'),
-                    'location_enable' => Configuration::get('WK_HOTEL_LOCATION_ENABLE'),
+                    'location_enable' => $locationEnabled,
                     'max_order_date' => date('Y-m-d', strtotime($max_order_date)),
                 )
             );

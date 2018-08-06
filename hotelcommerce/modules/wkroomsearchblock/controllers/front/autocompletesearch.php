@@ -13,7 +13,7 @@ class WkRoomSearchBlockAutoCompleteSearchModuleFrontController extends ModuleFro
             $return_data = $obj_htl_info->getHotelCategoryTree($search_data);
             if ($return_data) {
                 $html = '';
-                foreach ($return_data as $key => $value) {
+                foreach ($return_data as $value) {
                     $html .= '<li value="'.$value['id_category'].'" tabindex="-1" class="search_result_li">'.
                     $value['name'].'</li>';
                 }
@@ -24,15 +24,13 @@ class WkRoomSearchBlockAutoCompleteSearchModuleFrontController extends ModuleFro
             $cat_ids = Category::getAllCategoriesName($city_cat_id);
             if ($cat_ids) {
                 $html = '';
-                foreach ($cat_ids as $key => $value) {
+                foreach ($cat_ids as $value) {
                     if ($hotel_info = $obj_htl_info->hotelBranchInfoByCategoryId($value['id_category'])) {
                         $maxOrderDate = HotelOrderRestrictDate::getMaxOrderDate($hotel_info[0]['id']);
                         $maxOrderDate = date('Y-m-d', strtotime($maxOrderDate));
                         $html .= '<li class="hotel_name" data-id-hotel="'.$hotel_info[0]['id'].'" data-hotel-cat-id="'.
                         $hotel_info[0]['id_category'].'" data-max_order_date="'.$maxOrderDate.'">'.
                         $hotel_info[0]['hotel_name'].'</li>';
-                    }
-                    if ($hotel_info) {
                     }
                 }
                 $result['status'] = 'success';
