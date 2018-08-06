@@ -327,7 +327,7 @@ class hotelreservationsystem extends Module
     public function hookActionObjectLanguageAddAfter($params)
     {
         if ($newIdLang = $params['object']->id) {
-            $langTables = array('htl_room_type_feature_pricing');
+            $langTables = array('htl_room_type_feature_pricing', 'htl_branch_info');
             //If Admin update new language when we do entry in module all lang tables.
             HotelHelper::updateLangTables($newIdLang, $langTables);
 
