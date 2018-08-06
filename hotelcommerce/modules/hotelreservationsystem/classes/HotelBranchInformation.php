@@ -55,8 +55,7 @@ class HotelBranchInformation extends ObjectModel
             'check_in' => array('type' => self::TYPE_STRING),
             'check_out' => array('type' => self::TYPE_STRING),
             'address' => array('type' => self::TYPE_STRING),
-            'policies' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml'),
-            'city' => array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64),
+            'city' => array('type' => self::TYPE_STRING, 'validate' => 'isCityName', 'required' => true, 'size' => 64),
             'state_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
             'country_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
             'zipcode' => array('type' => self::TYPE_STRING),
@@ -68,6 +67,7 @@ class HotelBranchInformation extends ObjectModel
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false),
             //lang fields
+            'policies' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true,),
             'hotel_name' => array('type' => self::TYPE_STRING, 'lang' => true,),
             'description' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true,),
             'short_description' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true,),

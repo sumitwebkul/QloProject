@@ -383,13 +383,23 @@ class HotelHelper
         $def_cont_id = Country::getDefaultCountryId();
         $obj_hotel_info = new HotelBranchInformation();
         $obj_hotel_info->active = 1;
-        $obj_hotel_info->hotel_name = 'The Hotel Prime';
         $obj_hotel_info->phone = '0987654321';
         $obj_hotel_info->email = 'hotelprime@htl.com';
         $obj_hotel_info->check_in = '12:00';
         $obj_hotel_info->check_out = '12:00';
-        $obj_hotel_info->short_description = 'Nice place to stay';
-        $obj_hotel_info->description = 'Nice place to stay';
+
+        // lang fields
+        $languages = Language::getLanguages(false);
+        foreach ($languages as $lang) {
+            $obj_hotel_info->hotel_name[$lang['id_lang']] = 'The Hotel Prime';
+            $obj_hotel_info->short_description[$lang['id_lang']] = 'Nice place to stay';
+            $obj_hotel_info->description[$lang['id_lang']] = 'Nice place to stay';
+            $obj_hotel_info->policies[$lang['id_lang']] = '1. intelligentsia tattooed pop-up salvia asymmetrical mixtape 
+            meggings tousled ramps VHS cred. 2. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled 
+            ramps VHS cred. 3. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred. 
+            4. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred.';
+        }
+
         $obj_hotel_info->rating = 3;
         $obj_hotel_info->city = 'DefCity';
         if ($states = State::getStatesByIdCountry($def_cont_id)) {
@@ -400,7 +410,6 @@ class HotelHelper
         $obj_hotel_info->state_id = $state_id;
         $obj_hotel_info->country_id = $def_cont_id;
         $obj_hotel_info->zipcode = '263001';
-        $obj_hotel_info->policies = '1. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred. 2. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred. 3. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred. 4. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred.';
         $obj_hotel_info->address = 'Monticello Dr, Montgomery, AL 36117, USA';
         $obj_hotel_info->save();
 
