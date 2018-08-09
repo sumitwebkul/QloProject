@@ -715,7 +715,7 @@ $(document).ready(function() {
     //          frm_dt = yyyy+'-'+mm+'-'+dd;
     //         }
     //      frm_date = new Date(frm_dt);
-    //  }   
+    //  }
     // }
 
     // $('.date_range_search').html($('#from_date').val()+' to '+$('#to_date').val());
@@ -797,7 +797,7 @@ $(document).ready(function() {
 
                 if (locPresent) {
                     myLatLng = {
-                            lat: latitude, 
+                            lat: latitude,
                             lng: longitude
                         };
                 }
@@ -899,7 +899,7 @@ $(document).ready(function() {
 
 
     /* ----  AdminHotelFeaturePricesSettingsController Admin ---- */
-    
+
     $('#date_selection_type').on('change', function() {
         if ($('#date_selection_type').val() == 2) {
             $(".specific_date_type").show();
@@ -1065,6 +1065,25 @@ $(document).ready(function() {
         }
     }
 });
+
+function showFeaturePriceRuleLangField(lang_iso_code, id_lang)
+{
+	$('#feature_price_rule_lang_btn').html(lang_iso_code + ' <span class="caret"></span>');
+	$('.feature_price_name_all').hide();
+	$('#feature_price_name_'+id_lang).show();
+}
+
+
+function showHotelLangField(select_lang_name, id_lang)
+{
+    $('#multi_lang_btn').html(select_lang_name + ' <span class="caret"></span>');
+    $('.wk_text_field_all').hide();
+    $('.wk_text_field_' + id_lang).show();
+
+    $('.all_lang_icon').attr('src', img_dir_l+id_lang+'.jpg');
+    $('#choosedLangId').val(id_lang);
+}
+
 /* ----  HotelConfigurationSettingController Admin ---- */
 $(function() {
     $('[data-toggle="popover"]').popover()

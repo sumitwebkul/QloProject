@@ -1,4 +1,20 @@
 -----------------------------
+# V1.1.0 to V1.2.0
+-----------------------------
+
+## Added features
+
++ [CO] : Module is now made multilang.
++ [CO] : License.txt added.
++ [CO] : htl_testimonials_block_data_lang table added to make module multilang.
+
+
+## Update Policy
+
+- Database changed, Module need upload new file then UNINSTALL and re-installation.
+
+
+-----------------------------
 # V1.0.0 to V1.1.0
 -----------------------------
 

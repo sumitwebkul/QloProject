@@ -32,7 +32,7 @@ class WkTestimonialBlock extends Module
     {
         $this->name = 'wktestimonialblock';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.0';
+        $this->version = '1.2.0';
         $this->author = 'webkul';
         $this->need_instance = 0;
 
@@ -46,8 +46,8 @@ class WkTestimonialBlock extends Module
 
     public function hookDisplayAddModuleSettingLink()
     {
-        $href_testimonials_conf = $this->context->link->getAdminLink('AdminTestimonialsModuleSetting');
-        $this->context->smarty->assign('testimonials_setting_link', $href_testimonials_conf);
+        $hrefTestimonialsConf = $this->context->link->getAdminLink('AdminTestimonialsModuleSetting');
+        $this->context->smarty->assign('testimonials_setting_link', $hrefTestimonialsConf);
         return $this->display(__FILE__, 'hotelTestimonialSettingLink.tpl');
     }
 
@@ -70,16 +70,22 @@ class WkTestimonialBlock extends Module
         $this->context->controller->addCSS(_PS_MODULE_DIR_.$this->name.'/views/css/WkTestimonialBlockFront.css');
         $this->context->controller->addJS(_PS_MODULE_DIR_.$this->name.'/views/js/WkTestimonialBlockFront.js');
 
-        $HOTEL_TESIMONIAL_BLOCK_HEADING = Configuration::get('HOTEL_TESIMONIAL_BLOCK_HEADING');
-        $HOTEL_TESIMONIAL_BLOCK_CONTENT = Configuration::get('HOTEL_TESIMONIAL_BLOCK_CONTENT');
+        $HOTEL_TESIMONIAL_BLOCK_HEADING = Configuration::get(
+            'HOTEL_TESIMONIAL_BLOCK_HEADING',
+            $this->context->language->id
+        );
+        $HOTEL_TESIMONIAL_BLOCK_CONTENT = Configuration::get(
+            'HOTEL_TESIMONIAL_BLOCK_CONTENT',
+            $this->context->language->id
+        );
 
         $objTestimonialData = new WkHotelTestimonialData();
-        $testimonials_data = $objTestimonialData->getTestimonialData(1);
+        $testimonialsData = $objTestimonialData->getTestimonialData(1);
         $this->context->smarty->assign(
             array(
                 'HOTEL_TESIMONIAL_BLOCK_HEADING' => $HOTEL_TESIMONIAL_BLOCK_HEADING,
                 'HOTEL_TESIMONIAL_BLOCK_CONTENT' => $HOTEL_TESIMONIAL_BLOCK_CONTENT,
-                'testimonials_data' => $testimonials_data,
+                'testimonials_data' => $testimonialsData,
                 'ps_module_dir' => _PS_MODULE_DIR_,
             )
         );
@@ -94,6 +100,26 @@ class WkTestimonialBlock extends Module
     public function hookDisplayFooterExploreSectionHook()
     {
         return $this->display(__FILE__, 'hotelTestimonialFooterExploreLink.tpl');
+    }
+
+    /**
+     * If admin add any language then an entry will add in defined $lang_tables array's lang table same as prestashop
+     * @param array $params
+     */
+    public function hookActionObjectLanguageAddAfter($params)
+    {
+        if ($newIdLang = $params['object']->id) {
+            $langTables = array('htl_testimonials_block_data');
+            //If Admin update new language when we do entry in module all lang tables.
+            HotelHelper::updateLangTables($newIdLang, $langTables);
+
+            // update configuration keys
+            $configKeys = array(
+                'HOTEL_TESIMONIAL_BLOCK_HEADING',
+                'HOTEL_TESIMONIAL_BLOCK_CONTENT',
+            );
+            HotelHelper::updateConfigurationLangKeys($newIdLang, $configKeys);
+        }
     }
 
     public function install()
@@ -114,26 +140,36 @@ class WkTestimonialBlock extends Module
             }
         }
         if (!parent::install()
-            || !$this->registerHook('displayHome')
-            || !$this->registerHook('displayFooterExploreSectionHook')
-            || !$this->registerHook('displayAddModuleSettingLink')
-            || !$this->registerHook('displayDefaultNavigationHook')
+            || !$this->registerModuleHooks()
             || !$this->callInstallTab()
-            || !$this->insertDefaultHotelTestimonialsEntries()
+            || !WkHotelTestimonialData::insertModuleDemoData()
         ) {
             return false;
         }
         return true;
     }
 
+    public function registerModuleHooks()
+    {
+        return $this->registerHook(
+            array (
+                'displayHome',
+                'displayFooterExploreSectionHook',
+                'displayAddModuleSettingLink',
+                'displayDefaultNavigationHook',
+                'actionObjectLanguageAddAfter'
+            )
+        );
+    }
+
     public function callInstallTab()
     {
         //Controllers which are to be used in this modules but we have not to create tab for those controllers...
-        $this->installTab('AdminTestimonialsModuleSetting', 'testimonial configutaion');
+        $this->installTab('AdminTestimonialsModuleSetting', 'Testimonial configuration');
         return true;
     }
 
-    public function installTab($class_name, $tab_name, $tab_parent_name=false)
+    public function installTab($class_name, $tab_name, $tab_parent_name = false)
     {
         $tab = new Tab();
         $tab->active = 1;
@@ -155,11 +191,11 @@ class WkTestimonialBlock extends Module
 
     public function deleteConfigKeys()
     {
-        $var = array(
+        $configVars = array(
             'HOTEL_TESIMONIAL_BLOCK_HEADING',
             'HOTEL_TESIMONIAL_BLOCK_CONTENT'
         );
-        foreach ($var as $key) {
+        foreach ($configVars as $key) {
             if (!Configuration::deleteByName($key)) {
                 return false;
             }
@@ -171,33 +207,28 @@ class WkTestimonialBlock extends Module
     {
         return Db::getInstance()->execute(
             'DROP TABLE IF EXISTS
-            `'._DB_PREFIX_.'htl_testimonials_block_data`'
+            `'._DB_PREFIX_.'htl_testimonials_block_data`,
+            `'._DB_PREFIX_.'htl_testimonials_block_data_lang`'
         );
     }
 
-
-    public function callUninstallTab()
+    public function uninstallTab()
     {
-        $this->uninstallTab('AdminTestimonialsModuleSetting');
+        $moduleTabs = Tab::getCollectionFromModule($this->name);
+        if (!empty($moduleTabs)) {
+            foreach ($moduleTabs as $moduleTab) {
+                $moduleTab->delete();
+            }
+        }
+
         return true;
     }
 
-    public function uninstallTab($class_name)
-    {
-        $id_tab = (int)Tab::getIdFromClassName($class_name);
-        if ($id_tab) {
-            $tab = new Tab($id_tab);
-            return $tab->delete();
-        } else {
-            return false;
-        }
-    }
-
-    public function uninstall($keep = true)
+    public function uninstall()
     {
         if (!parent::uninstall()
             || !$this->deleteTables()
-            || !$this->callUninstallTab()
+            || !$this->uninstallTab()
             || !$this->deleteConfigKeys()
             || !$this->deleteTestimonialUserImage()
         ) {
@@ -212,44 +243,6 @@ class WkTestimonialBlock extends Module
             foreach ($uploadedImg as $img) {
                 unlink($img);
             }
-        }
-        return true;
-    }
-
-    public function insertDefaultHotelTestimonialsEntries()
-    {
-        $HOTEL_TESIMONIAL_BLOCK_HEADING = $this->l('What our Guest say?');
-        $HOTEL_TESIMONIAL_BLOCK_CONTENT = $this->l('Fap put a bird on it next level, sustainable disrupt polaroid
-        flannel Helvetica Kickstarter quinoa bicycle rights narwhal wolf Fap put a bird on it next level.');
-
-        Configuration::updateValue('HOTEL_TESIMONIAL_BLOCK_HEADING', $HOTEL_TESIMONIAL_BLOCK_HEADING);
-        Configuration::updateValue('HOTEL_TESIMONIAL_BLOCK_CONTENT', $HOTEL_TESIMONIAL_BLOCK_CONTENT);
-
-        $designations = array(0 => 'Eon Comics CEO', 1 => 'Ken Comics Kal', 2 => 'Jan Comics Joe');
-        $images = array(0 => '1.png', 1 => '2.png', 2 => '3.png');
-        $names = array(0 => 'Calrk Kent', 1 => 'Calrk Kent', 2 => 'Calrk Kent');
-
-        $testimonialContent = $this->l("It is a long established fact that a reader will be distracted by the readable
-        content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less
-        normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable
-        English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text,
-        and a search for 'lorem ipsum' will uncover many web sites still in their infancy.");
-
-        for ($i = 0; $i < 3; $i++) {
-            $objTestimonialData = new WkHotelTestimonialData();
-            $objTestimonialData->name = $names[$i];
-            $objTestimonialData->designation = $designations[$i];
-            $objTestimonialData->testimonial_content = $testimonialContent;
-
-            ImageManager::resize(
-                _PS_MODULE_DIR_.$this->name.'/views/img/dummy_img/'.($i+1).'.png',
-                _PS_MODULE_DIR_.$this->name.'/views/img/hotels_testimonials_img/'.($i+1).'.jpg'
-            );
-
-            $objTestimonialData->position = WkHotelTestimonialData::getHigherPosition();
-            $objTestimonialData->testimonial_image = ($i+1).'.jpg';
-            $objTestimonialData->active = 1;
-            $objTestimonialData->save();
         }
         return true;
     }

@@ -1,4 +1,23 @@
 <?php
+/**
+* 2010-2018 Webkul.
+*
+* NOTICE OF LICENSE
+*
+* All right is reserved,
+* Please go through this link for complete license : https://store.webkul.com/license.html
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade this module to newer
+* versions in the future. If you wish to customize this module for your
+* needs please refer to https://store.webkul.com/customisation-guidelines/ for more information.
+*
+*  @author    Webkul IN <support@webkul.com>
+*  @copyright 2010-2018 Webkul IN
+*  @license   https://store.webkul.com/license.html
+*/
+
 class AdminTestimonialsModuleSettingController extends ModuleAdminController
 {
     protected $position_identifier = 'id_testimonial_block_to_move';
@@ -13,25 +32,28 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
 
         parent::__construct();
 
+        // field options for global fields
         $this->fields_options = array(
             'featuresmodulesetting' => array(
                 'title' =>    $this->l('Hotel Testimonials Setting'),
                 'fields' =>    array(
                     'HOTEL_TESIMONIAL_BLOCK_HEADING' => array(
-                        'title' => $this->l('Testimonial Blog Title'),
-                        'type' => 'text',
-                        'required' => 'true',
-                        'id' => 'HOTEL_TESIMONIAL_BLOCK_HEADING',
-                        'hint' => $this->l('Testimonial Block Heading. Ex. Guest Testimonials.'),
+                        'title' => $this->l('Testimonial Block Title'),
+                        'type' => 'textLang',
+                        'hint' => $this->l('Testimonial block title. ex. guest testimonials.'),
+                        'lang' => true,
+                        'required' => true,
+                        'validation' => 'isGenericName'
                     ),
                     'HOTEL_TESIMONIAL_BLOCK_CONTENT' => array(
-                        'title' => $this->l('Testimonial Blog Description'),
-                        'type' => 'textarea',
-                        'required' => 'true',
-                        'id' => 'HOTEL_TESIMONIAL_BLOCK_CONTENT',
+                        'title' => $this->l('Testimonial Block Description'),
+                        'type' => 'textareaLang',
                         'rows' => '4',
                         'cols' => '2',
-                        'hint' => $this->l('Testimonial Block Detail.'),
+                        'hint' => $this->l('Testimonial block description.'),
+                        'lang' => true,
+                        'required' => true,
+                        'validation' => 'isGenericName'
                     ),
                 ),
                 'submit' => array('title' => $this->l('Save'))
@@ -117,10 +139,10 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
         if (!($obj = $this->loadObject(true))) {
             return;
         }
-        $ps_img_url = _PS_MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/'.$obj->id.'.jpg';
-        if ($img_exist = file_exists($ps_img_url)) {
-            $mod_img_url = _MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/'.$obj->id.'.jpg';
-            $image = "<img class='img-thumbnail img-responsive' style='max-width:100px' src='".$mod_img_url."'>";
+        $psImgUrl = _PS_MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/'.$obj->id.'.jpg';
+        if ($imgExist = file_exists($psImgUrl)) {
+            $modImgUrl = _MODULE_DIR_.$this->module->name.'/views/img/hotels_testimonials_img/'.$obj->id.'.jpg';
+            $image = "<img class='img-thumbnail img-responsive' style='max-width:100px' src='".$modImgUrl."'>";
         }
 
         $this->fields_form = array(
@@ -141,7 +163,7 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
                     'label' => $this->l('Person\'s Designation'),
                     'name' => 'designation',
                     'required' => true,
-                    'hint' => $this->l('Testimonial person Designation')
+                    'hint' => $this->l('Testimonial person designation')
                 ),
                 array(
                     'type' => 'textarea',
@@ -149,14 +171,15 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
                     'label' => $this->l('Testimonial Description'),
                     'name' => 'testimonial_content',
                     'required' => true,
-                    'hint' => $this->l('Testimonial Content')
+                    'lang' => true,
+                    'hint' => $this->l('Testimonial content')
                 ),
                 array(
                     'type' => 'file',
                     'label' => $this->l('Person image'),
                     'name' => 'testimonial_image',
                     'display_image' => true,
-                    'image' => $img_exist ? $image : false,
+                    'image' => $imgExist ? $image : false,
                     'hint' => $this->l('Upload an image of the person to whom this testimonial belongs.'),
                 ),
                 array(
@@ -181,8 +204,8 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
             ),
             'submit' => array(
                 'title' => $this->l('Save')
-            ));
-
+            )
+        );
         return parent::renderForm();
     }
 
@@ -197,19 +220,37 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
 
     public function processSave()
     {
-        $testimonial_id = Tools::getValue('id_testimonial_block');
-        $person_name = Tools::getValue('name');
-        $person_designation = Tools::getValue('designation');
-        $testimonial_content = Tools::getValue('testimonial_content');
-        if (!$person_name) {
+        $idTestimonial = Tools::getValue('id_testimonial_block');
+        $personName = Tools::getValue('name');
+        $personDesignation = Tools::getValue('designation');
+        if (!$personName) {
             $this->errors[] = $this->l('Person\'s Name is a required field.');
+        } elseif (!Validate::isName($personName)) {
+            $this->errors[] = $this->l('Invalid Person\'s Name.');
         }
-        if (!$person_designation) {
+        if (!$personDesignation) {
             $this->errors[] = $this->l('Person\'s Designation is a required field.');
+        } elseif (!Validate::isGenericName($personName)) {
+            $this->errors[] = $this->l('Invalid Person\'s Name.');
         }
-        if ($testimonial_content == '') {
-            $this->errors[] = $this->l('Testimonial content is a required field.');
+
+        // check if field is atleast in default language. Not available in default prestashop
+        $defaultLangId = Configuration::get('PS_LANG_DEFAULT');
+        $objDefaultLanguage = Language::getLanguage((int) $defaultLangId);
+        $languages = Language::getLanguages(false);
+        if (!trim(Tools::getValue('testimonial_content_'.$defaultLangId))) {
+            $this->errors[] = $this->l('testimonial content is required at least in ').
+            $objDefaultLanguage['name'];
+        } else {
+            foreach ($languages as $lang) {
+                if (trim(Tools::getValue('testimonial_content_'.$lang['id_lang']))) {
+                    if (!Validate::isGenericName(Tools::getValue('testimonial_content_'.$lang['id_lang']))) {
+                        $this->errors[] = $this->l('Invalid testimonial content in ').$lang['name'];
+                    }
+                }
+            }
         }
+
         if (isset($_FILES['testimonial_image']) && $_FILES['testimonial_image']['tmp_name']) {
             $error = HotelImage::validateImage($_FILES['testimonial_image']);
             if ($error) {
@@ -218,16 +259,26 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
         }
 
         if (!count($this->errors)) {
-            if ($testimonial_id) {
-                $objTestimonialData = new WkHotelTestimonialData($testimonial_id);
+            if ($idTestimonial) {
+                $objTestimonialData = new WkHotelTestimonialData($idTestimonial);
             } else {
                 $objTestimonialData = new WkHotelTestimonialData();
                 $objTestimonialData->position = WkHotelTestimonialData::getHigherPosition();
             }
-
-            $objTestimonialData->name = $person_name;
-            $objTestimonialData->designation = $person_designation;
-            $objTestimonialData->testimonial_content = $testimonial_content;
+            $objTestimonialData->name = $personName;
+            $objTestimonialData->designation = $personDesignation;
+            // lang fields
+            foreach ($languages as $lang) {
+                if (!trim(Tools::getValue('testimonial_content_'.$lang['id_lang']))) {
+                    $objTestimonialData->testimonial_content[$lang['id_lang']] = Tools::getValue(
+                        'testimonial_content_'.$defaultLangId
+                    );
+                } else {
+                    $objTestimonialData->testimonial_content[$lang['id_lang']] = Tools::getValue(
+                        'testimonial_content_'.$lang['id_lang']
+                    );
+                }
+            }
             $objTestimonialData->active = Tools::getValue('active');
             if ($objTestimonialData->save()) {
                 if ($_FILES['testimonial_image']['size']) {
@@ -252,21 +303,43 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
 
     public function postProcess()
     {
-        if (Tools::isSubmit('submitOptionshtl_features_block_data')) {
-            $testimonial_main_blog_title = Tools::getValue('HOTEL_TESIMONIAL_BLOCK_HEADING');
-            $testimonial_main_blog_content = Tools::getValue('HOTEL_TESIMONIAL_BLOCK_CONTENT');
-
-            if (!$testimonial_main_blog_title) {
-                $this->errors[] = $this->l('Testimonila blog title is a required field.');
+        if (Tools::isSubmit('submitOptions'.$this->table)) {
+            // check if field is atleast in default language. Not available in default prestashop
+            $defaultLangId = Configuration::get('PS_LANG_DEFAULT');
+            $objDefaultLanguage = Language::getLanguage((int) $defaultLangId);
+            $languages = Language::getLanguages(false);
+            if (!trim(Tools::getValue('HOTEL_TESIMONIAL_BLOCK_HEADING_'.$defaultLangId))) {
+                $this->errors[] = $this->l('testimonial block title is required at least in ').
+                $objDefaultLanguage['name'];
             }
-            if (!$testimonial_main_blog_content) {
-                $this->errors[] = $this->l('Testimonial blog desription is a required field.');
+            if (!trim(Tools::getValue('HOTEL_TESIMONIAL_BLOCK_CONTENT_'.$defaultLangId))) {
+                $this->errors[] = $this->l('testimonial block description is required at least in ').
+                $objDefaultLanguage['name'];
             }
+            if (!count($this->errors)) {
+                foreach ($languages as $lang) {
+                    // if lang fileds are at least in default language and not available in other languages then
+                    // set empty fields value to default language value
+                    if (!trim(Tools::getValue('HOTEL_TESIMONIAL_BLOCK_HEADING_'.$lang['id_lang']))) {
+                        $_POST['HOTEL_TESIMONIAL_BLOCK_HEADING_'.$lang['id_lang']] = Tools::getValue(
+                            'HOTEL_TESIMONIAL_BLOCK_HEADING_'.$defaultLangId
+                        );
+                    }
+                    if (!trim(Tools::getValue('HOTEL_TESIMONIAL_BLOCK_CONTENT_'.$lang['id_lang']))) {
+                        $_POST['HOTEL_TESIMONIAL_BLOCK_CONTENT_'.$lang['id_lang']] = Tools::getValue(
+                            'HOTEL_TESIMONIAL_BLOCK_CONTENT_'.$defaultLangId
+                        );
+                    }
+                }
+                // if no custom errors the send to parent::postProcess() for further process
+                parent::postProcess();
+            }
+        } else {
+            parent::postProcess();
         }
-        parent::postProcess();
     }
 
-    // update positions of membership
+    // update positions
     public function ajaxProcessUpdatePositions()
     {
         $way = (int) Tools::getValue('way');

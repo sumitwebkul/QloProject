@@ -1359,7 +1359,7 @@ class AdminControllerCore extends Controller
                 // Check if field is required
                 if ((!Shop::isFeatureActive() && isset($values['required']) && $values['required'])
                     || (Shop::isFeatureActive() && isset($_POST['multishopOverrideOption'][$field]) && isset($values['required']) && $values['required'])) {
-                    if (isset($values['type']) && $values['type'] == 'textLang') {
+                    if (isset($values['type']) && in_array($values['type'], array('textLang', 'textareaLang'))) {
                         foreach ($languages as $language) {
                             if (($value = Tools::getValue($field.'_'.$language['id_lang'])) == false && (string)$value != '0') {
                                 $this->errors[] = sprintf(Tools::displayError('field %s is required.'), $values['title']);
@@ -1371,7 +1371,7 @@ class AdminControllerCore extends Controller
                 }
 
                 // Check field validator
-                if (isset($values['type']) && $values['type'] == 'textLang') {
+                if (isset($values['type']) && in_array($values['type'], array('textLang', 'textareaLang'))) {
                     foreach ($languages as $language) {
                         if (Tools::getValue($field.'_'.$language['id_lang']) && isset($values['validation'])) {
                             if (!Validate::$values['validation'](Tools::getValue($field.'_'.$language['id_lang']))) {

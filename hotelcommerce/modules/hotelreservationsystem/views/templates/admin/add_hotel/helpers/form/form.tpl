@@ -7,6 +7,28 @@
 		{/if}
 	</div>
 	<form id="{$table|escape:'htmlall':'UTF-8'}_form" class="defaultForm {$name_controller|escape:'htmlall':'UTF-8'} form-horizontal" action="{$current|escape:'htmlall':'UTF-8'}&{if !empty($submit_action)}{$submit_action|escape:'htmlall':'UTF-8'}{/if}&token={$token|escape:'htmlall':'UTF-8'}" method="post" enctype="multipart/form-data" {if isset($style)}style="{$style|escape:'htmlall':'UTF-8'}"{/if}>
+		{if count($languages) > 1}
+			<div class="col-lg-12">
+				<label class="control-label">{l s='Choose Language' mod='marketplace'}</label>
+				<input type="hidden" name="choosedLangId" id="choosedLangId" value="{$currentLang.id_lang}">
+				<button type="button" id="multi_lang_btn" class="btn btn-default dropdown-toggle wk_language_toggle" data-toggle="dropdown">
+					{$currentLang.name}
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu wk_language_menu" style="left:14%;top:32px;">
+					{foreach from=$languages item=language}
+						<li>
+							<a href="javascript:void(0)" onclick="showHotelLangField('{$language.name}', {$language.id_lang});">
+								{$language.name}
+							</a>
+						</li>
+					{/foreach}
+				</ul>
+				<p class="help-block">{l s='Change language for updating information in multiple language.' mod='marketplace'}</p>
+				<hr>
+			</div>
+		{/if}
+
 		<div class="tabs wk-tabs-panel">
 			<ul class="nav nav-tabs">
 				<li class="active">
@@ -46,9 +68,19 @@
 					<div class="form-group">
 						<label class="col-sm-3 control-label required" for="hotel_name" >
 							{l s='Hotel Name :' mod='hotelreservationsystem'}
+							{include file="../../../_partials/mp-form-fields-flag.tpl"}
 						</label>
-						<div class="col-sm-6">
-							<input type="text" id="hotel_name" name="hotel_name" class="form-control" {if isset($edit)}value="{$hotel_info.hotel_name|escape:'html':'UTF-8'}"{/if}/>
+						<div class="col-lg-6">
+							{foreach from=$languages item=language}
+								{assign var="hotel_name" value="hotel_name_`$language.id_lang`"}
+								<input type="text"
+								id="hotel_name_{$language.id_lang}"
+								name="hotel_name_{$language.id_lang}"
+								value="{if isset($smarty.post.$hotel_name)}{$smarty.post.$hotel_name|escape:'htmlall':'UTF-8'}{elseif isset($edit)}{$hotel_info.hotel_name[{$language.id_lang}]|escape:'htmlall':'UTF-8'}{/if}"
+								class="form-control hotel_name_all wk_text_field_all wk_text_field_{$language.id_lang}"
+								maxlength="128"
+								{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
+							{/foreach}
 						</div>
 					</div>
 					<div class="form-group">

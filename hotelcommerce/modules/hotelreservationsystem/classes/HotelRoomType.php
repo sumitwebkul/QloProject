@@ -1,4 +1,22 @@
 <?php
+/**
+* 2010-2018 Webkul.
+*
+* NOTICE OF LICENSE
+*
+* All right is reserved,
+* Please go through this link for complete license : https://store.webkul.com/license.html
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade this module to newer
+* versions in the future. If you wish to customize this module for your
+* needs please refer to https://store.webkul.com/customisation-guidelines/ for more information.
+*
+*  @author    Webkul IN <support@webkul.com>
+*  @copyright 2010-2018 Webkul IN
+*  @license   https://store.webkul.com/license.html
+*/
 
 class HotelRoomType extends ObjectModel
 {
@@ -46,7 +64,7 @@ class HotelRoomType extends ObjectModel
      */
     public function getRoomTypeInfoByIdProduct($id_product)
     {
-        $sql = 'SELECT hrt.`id`,hrt.`id_hotel`, hrt.`adult`, hrt.`children`, hbi.`hotel_name` 
+        $sql = 'SELECT hrt.`id`,hrt.`id_hotel`, hrt.`adult`, hrt.`children`, hbi.`hotel_name`
                 FROM `'._DB_PREFIX_.'htl_room_type` AS hrt
                 INNER JOIN `'._DB_PREFIX_.'htl_branch_info` AS hbi ON (hbi.id = hrt.id_hotel)
                 WHERE `id_product` = '.$id_product;
@@ -69,7 +87,7 @@ class HotelRoomType extends ObjectModel
     public function getRoomTypeByHotelId($hotel_id, $id_lang)
     {
         $sql = 'SELECT pl.name AS room_type, pl.id_product AS id_product, p.active
-			FROM `'._DB_PREFIX_.'htl_room_type` AS rt 
+			FROM `'._DB_PREFIX_.'htl_room_type` AS rt
             INNER JOIN `'._DB_PREFIX_.'product_lang` AS pl ON (rt.id_product = pl.id_product AND pl.id_lang='.$id_lang.')
             INNER JOIN `'._DB_PREFIX_.'product` AS p ON (rt.id_product = p.id_product)
 			WHERE rt.id_hotel ='.$hotel_id;

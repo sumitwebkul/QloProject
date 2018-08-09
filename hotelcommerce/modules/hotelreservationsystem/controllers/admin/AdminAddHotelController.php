@@ -1,4 +1,23 @@
 <?php
+/**
+* 2010-2018 Webkul.
+*
+* NOTICE OF LICENSE
+*
+* All right is reserved,
+* Please go through this link for complete license : https://store.webkul.com/license.html
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade this module to newer
+* versions in the future. If you wish to customize this module for your
+* needs please refer to https://store.webkul.com/customisation-guidelines/ for more information.
+*
+*  @author    Webkul IN <support@webkul.com>
+*  @copyright 2010-2018 Webkul IN
+*  @license   https://store.webkul.com/license.html
+*/
+
 class AdminAddHotelController extends ModuleAdminController
 {
     public function __construct()
@@ -6,41 +25,40 @@ class AdminAddHotelController extends ModuleAdminController
         $this->bootstrap = true;
         $this->table = 'htl_branch_info';
         $this->className = 'HotelBranchInformation';
-        $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'state` s ON (s.`id_state` = a.`state_id`)';
-        $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'country_lang` cl
-        ON (cl.`id_country` = a.`country_id` AND cl.`id_lang` = '.Configuration::get('PS_LANG_DEFAULT').')';
-        $this->_select = 's.`name` as `state_name`, cl.`name` as country_name';
         $this->identifier = 'id';
         parent::__construct();
+
+        $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+        ON (a.id = hbl.id AND hbl.`id_lang` = '.(int) $this->context->language->id.')';
+        $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'state` s ON (s.`id_state` = a.`state_id`)';
+        $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'country_lang` cl
+        ON (cl.`id_country` = a.`country_id` AND cl.`id_lang` = '.(int) $this->context->language->id.')';
+
+        $this->_select = ' hbl.`hotel_name`, s.`name` as `state_name`, cl.`name` as country_name';
 
         $this->fields_list = array(
             'id' => array(
                 'title' => $this->l('ID'),
                 'align' => 'center',
             ),
-
             'hotel_name' => array(
                 'title' => $this->l('Hotel Name'),
                 'align' => 'center',
             ),
-
             'city' => array(
                 'title' => $this->l('City'),
                 'align' => 'center',
             ),
-
             'state_name' => array(
                 'title' => $this->l('State'),
                 'align' => 'center',
                 'filter_key' => 's!name',
             ),
-
             'country_name' => array(
                 'title' => $this->l('Country'),
                 'align' => 'center',
                 'filter_key' => 'cl!name',
             ),
-
             'active' => array(
                 'align' => 'center',
                 'title' => $this->l('Status'),
@@ -56,17 +74,6 @@ class AdminAddHotelController extends ModuleAdminController
                 'confirm' => $this->l('Delete selected items?'),
             ),
         );
-    }
-
-    public function getCountryName($echo, $row)
-    {
-        if ($echo) {
-            $country = new Country($echo, Configuration::get('PS_LANG_DEFAULT'));
-            $return = $country->name;
-        } else {
-            $return = $this->l('Country Id missing');
-        }
-        return $return;
     }
 
     public function initToolbar()
@@ -88,28 +95,30 @@ class AdminAddHotelController extends ModuleAdminController
 
     public function renderForm()
     {
+        $smartyVars = array();
         //tinymce setup
-        $this->context->smarty->assign('path_css', _THEME_CSS_DIR_);
-        $this->context->smarty->assign('ad', __PS_BASE_URI__.basename(_PS_ADMIN_DIR_));
-        $this->context->smarty->assign('autoload_rte', true);
-        $this->context->smarty->assign('lang', true);
-        $this->context->smarty->assign('iso', $this->context->language->iso_code);
+        $smartyVars['path_css'] = _THEME_CSS_DIR_;
+        $smartyVars['ad'] = __PS_BASE_URI__.basename(_PS_ADMIN_DIR_);
+        $smartyVars['autoload_rte'] = true;
+        $smartyVars['lang'] = true;
+        $smartyVars['iso'] = $this->context->language->iso_code;
+        //lang vars
+        $currentLangId = Configuration::get('PS_LANG_DEFAULT');
+        $smartyVars['languages'] = Language::getLanguages(false);
+        $smartyVars['currentLang'] = Language::getLanguage((int) $currentLangId);
 
-        $obj_countries = new Country();
-        $countries_var = Country::getCountries($this->context->language->id);
+        $countries = Country::getCountries($this->context->language->id);
+        $smartyVars['country_var'] = $countries;
 
         $country = $this->context->country;
-        $this->context->smarty->assign('defaultCountry', $country->name[Configuration::get('PS_LANG_DEFAULT')]);
+        $smartyVars['defaultCountry'] = $country->name[Configuration::get('PS_LANG_DEFAULT')];
 
-        if ($this->display == 'add') {
-            $this->context->smarty->assign('country_var', $countries_var);
-        } elseif ($this->display == 'edit') {
-            $hotel_id = Tools::getValue('id');
-            $hotel_branch_info_obj = new HotelBranchInformation();
-            $hotel_branch_info = $hotel_branch_info_obj->hotelBranchInfoById($hotel_id);
+        if ($this->display == 'edit') {
+            $idHotel = Tools::getValue('id');
+            $objHtlBranch = new HotelBranchInformation();
+            $hotel_branch_info = $objHtlBranch->hotelBranchInfoById($idHotel);
 
-            $country_id = $hotel_branch_info['country_id'];
-            $statesbycountry = State::getStatesByIdCountry($country_id);
+            $statesbycountry = State::getStatesByIdCountry($hotel_branch_info['country_id']);
 
             $states = array();
             if ($statesbycountry) {
@@ -118,23 +127,24 @@ class AdminAddHotelController extends ModuleAdminController
                     $states[$key]['name'] = $value['name'];
                 }
             }
-            $this->context->smarty->assign('edit', 1);
-            $this->context->smarty->assign('country_var', $countries_var);
-            $this->context->smarty->assign('state_var', $states);
-            $this->context->smarty->assign('hotel_info', $hotel_branch_info);
+            $smartyVars['edit'] =  1;
+            $smartyVars['country_var'] =  $countries;
+            $smartyVars['state_var'] =  $states;
+            $smartyVars['hotel_info'] =  $hotel_branch_info;
             //Hotel Images
             $objHotelImage = new HotelImage();
-            $hotelAllImages = $objHotelImage->getAllImagesByHotelId($hotel_id);
+            $hotelAllImages = $objHotelImage->getAllImagesByHotelId($idHotel);
             if ($hotelAllImages) {
                 foreach ($hotelAllImages as &$image) {
                     $image['image_link'] = _MODULE_DIR_.$this->module->name.'/views/img/hotel_img/'.
                     $image['hotel_image_id'].'.jpg';
                 }
-                $this->context->smarty->assign('hotelImages', $hotelAllImages);
+                $smartyVars['hotelImages'] =  $hotelAllImages;
             }
         }
-        $this->context->smarty->assign('enabledDisplayMap', Configuration::get('WK_GOOGLE_ACTIVE_MAP'));
-
+        $smartyVars['enabledDisplayMap'] =  Configuration::get('WK_GOOGLE_ACTIVE_MAP');
+        $smartyVars['ps_img_dir'] = _PS_IMG_.'l/';
+        $this->context->smarty->assign($smartyVars);
         $this->fields_form = array(
             'submit' => array(
                 'title' => $this->l('Save'),
@@ -145,7 +155,7 @@ class AdminAddHotelController extends ModuleAdminController
 
     public function processSave()
     {
-        $hotel_id = Tools::getValue('id');
+        $idHotel = Tools::getValue('id');
         $hotel_name = Tools::getValue('hotel_name');
         $phone = Tools::getValue('phone');
         $email = Tools::getValue('email');
@@ -226,8 +236,8 @@ class AdminAddHotelController extends ModuleAdminController
         }
 
         if (!count($this->errors)) {
-            if ($hotel_id) {
-                $obj_hotel_info = new HotelBranchInformation($hotel_id);
+            if ($idHotel) {
+                $obj_hotel_info = new HotelBranchInformation($idHotel);
             } else {
                 $obj_hotel_info = new HotelBranchInformation();
             }
@@ -304,7 +314,7 @@ class AdminAddHotelController extends ModuleAdminController
             }
 
             if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
-                if ($hotel_id) {
+                if ($idHotel) {
                     Tools::redirectAdmin(
                         self::$currentIndex.'&id='.(int) $new_hotel_id.'&update'.$this->table.'&conf=4&token='.
                         $this->token
@@ -316,14 +326,14 @@ class AdminAddHotelController extends ModuleAdminController
                     );
                 }
             } else {
-                if ($hotel_id) {
+                if ($idHotel) {
                     Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
                 } else {
                     Tools::redirectAdmin(self::$currentIndex.'&conf=3&token='.$this->token);
                 }
             }
         } else {
-            if ($hotel_id) {
+            if ($idHotel) {
                 $this->display = 'edit';
             } else {
                 $this->display = 'add';

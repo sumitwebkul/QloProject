@@ -1,0 +1,16 @@
+-----------------------------
+# V1.0.0 to V1.0.1
+-----------------------------
+
+## Added features
+
++ [CO] : License.txt added.
+
+
+## Improved/changed features
+
+- [CO] : WK_HTL_SHORT_DESC (configuration key) is called as multilang field now.
+
+## Update Policy
+
+- Mobule need only file update, can be updated only by UPLOADING new version on module

@@ -1,0 +1,23 @@
+-----------------------------
+# V1.0.0 to V1.1.0
+-----------------------------
+
+## Added features
+
++ [CO] : Module is now made multilang.
++ [CO] : License.txt added.
++ [CO] : htl_features_block_data_lang added for multilang.
+
+
+## Improved/changed features
+
+- [BO] : position working improved at AdminFeaturesModuleSetting Controller
+
+- [CO] : getHotelAmenities() improved in WkHotelFeaturesData.php
+
+- [CO] : `id` is changed to `id_features_block` in htl_features_block_data table for position working.
+
+
+## Update Policy
+
+- Database changed, Module need upload new file then UNINSTALL and re-installation.

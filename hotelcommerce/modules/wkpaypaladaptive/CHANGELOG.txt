@@ -6,3 +6,4 @@
 
 - [+]CO : Unnecessary files wkpaypal.php and paymentdetailslink.tpl are removed.
 - [+]CO : Unnecessary table wkpaypal is removed.
+- [+]CO : mppaypadaptive changed to wkpaypaladaptive.

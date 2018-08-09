@@ -1,7 +1,22 @@
-####################################
-# V1.0.2 to V1.0.3
-####################################
+-----------------------------
+# V1.0.3 to V1.1.0
+-----------------------------
 
-## Bug/Issues Resolved:
+## Added features
 
-[+] CO : Resolved :: HotelHelper::getPsProducts() function used now in insertDefaultHotelFeaturesEntries().[Was issue on installing module while Qloapps installation]
++ [CO] : Module is now made multilang.
++ [CO] : License.txt added.
+
+
+## Improved/changed features
+
+- [BO] : position working improved at AdminHotelRoomModuleSetting Controller
+
+- [CO] : getHotelAmenities() improved in WkHotelRoomDisplay.php
+
+- [CO] : `id` is changed to `id_room_block` in htl_room_block_data table for position working.
+
+
+## Update Policy
+
+- Database changed, Module need upload new file then UNINSTALL and re-installation.
