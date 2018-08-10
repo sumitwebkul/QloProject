@@ -89,7 +89,7 @@ class HotelBranchInformation extends ObjectModel
     public function __construct($id = null, $id_lang = null, $id_shop = null)
     {
         $this->moduleInstance = Module::getInstanceByName('hotelreservationsystem');
-        parent::__construct($id);
+        parent::__construct($id, $id_lang, $id_shop);
     }
 
     // Web Services Code
@@ -110,16 +110,18 @@ class HotelBranchInformation extends ObjectModel
         if (!$idLang) {
             $idLang = Context::getContext()->language->id;
         }
-        $sql = 'SELECT hbi.*';
+        $sql = 'SELECT hbi.*, hbl.`policies`, hbl.`hotel_name`, hbl.`description`, hbl.`short_description`';
         if ($detailedInfo) {
             $sql .= ', hi.id as id_cover_img, s.`name` as `state_name`, cl.`name` as country_name';
         }
         $sql .= ' FROM `'._DB_PREFIX_.'htl_branch_info` hbi';
+        $sql .= ' LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+        ON (hbl.`id` = hbi.`id` AND hbl.`id_lang` = '.(int)$idLang.')';
         if ($detailedInfo) {
             $sql .= ' LEFT JOIN `'._DB_PREFIX_.'htl_image` hi ON (hi.`id_hotel` = hbi.`id` AND hi.`cover` = 1)';
             $sql .= ' LEFT JOIN `'._DB_PREFIX_.'state` s ON (s.`id_state` = hbi.`state_id`)';
             $sql .= ' LEFT JOIN `'._DB_PREFIX_.
-            'country_lang` cl ON (cl.`id_country` = hbi.`country_id` AND cl.`id_lang` = '.$idLang.')';
+            'country_lang` cl ON (cl.`id_country` = hbi.`country_id` AND cl.`id_lang` = '.(int)$idLang.')';
         }
         $sql .= ' WHERE 1';
         if ($active == 1 || $active == 0) {
@@ -135,17 +137,17 @@ class HotelBranchInformation extends ObjectModel
 
     /**
      * [getActiveHotelBranchesInfo : To get all the activated hotels information created by the admin].
-     *
      * @return [array | false] [If no hotel is created or activated then returns false otherwise returns all activated hotels information array]
      */
     public function getActiveHotelBranchesInfo()
     {
-        $result = Db::getInstance()->executeS('SELECT `id` , `hotel_name`, `id_category` FROM `'._DB_PREFIX_.'htl_branch_info` WHERE active=1');
-        if ($result) {
-            return $result;
-        }
+        $idLang = Context::getContext()->language->id;
+        $sql = 'SELECT hbi.*, hbl.`policies`, hbl.`hotel_name`, hbl.`description`, hbl.`short_description`
+            FROM `'._DB_PREFIX_.'htl_branch_info` hbi
+            LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+            ON (hbl.`id` = hbi.`id` AND hbl.`id_lang` = '.(int)$idLang.')  WHERE hbi.`active` = 1';
 
-        return false;
+        return Db::getInstance()->executeS($sql);
     }
 
     /**
@@ -158,12 +160,13 @@ class HotelBranchInformation extends ObjectModel
      */
     public function hotelBranchInfoById($id)
     {
-        $result = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'htl_branch_info` WHERE id='.$id);
-        if ($result) {
-            return $result;
-        }
+        $idLang = Context::getContext()->language->id;
+        $sql = 'SELECT hbi.*, hbl.`policies`, hbl.`hotel_name`, hbl.`description`, hbl.`short_description`
+            FROM `'._DB_PREFIX_.'htl_branch_info` hbi
+            LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+            ON (hbl.`id` = hbi.`id` AND hbl.`id_lang` = '.(int)$idLang.')  WHERE hbi.`id` = '.(int)$id;
 
-        return false;
+        return Db::getInstance()->getRow($sql);
     }
 
     /**
@@ -174,12 +177,12 @@ class HotelBranchInformation extends ObjectModel
      */
     public function hotelsNameAndId()
     {
-        $result = Db::getInstance()->executeS('SELECT id , hotel_name FROM `'._DB_PREFIX_.'htl_branch_info`');
-        if ($result) {
-            return $result;
-        }
+        $idLang = Context::getContext()->language->id;
+        $sql = 'SELECT hbi.`id`, hbl.`hotel_name` FROM `'._DB_PREFIX_.'htl_branch_info` hbi
+            LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+            ON (hbl.`id` = hbi.`id` AND hbl.`id_lang` = '.(int)$idLang.')';
 
-        return false;
+        return Db::getInstance()->executeS($sql);
     }
 
     /**
@@ -189,12 +192,13 @@ class HotelBranchInformation extends ObjectModel
      */
     public function getUnassignedFeaturesHotelIds()
     {
-        $result = Db::getInstance()->executeS('SELECT id , hotel_name FROM `'._DB_PREFIX_.'htl_branch_info` WHERE `id` NOT IN (SELECT DISTINCT id_hotel FROM `'._DB_PREFIX_.'htl_branch_features`)');
-        if ($result) {
-            return $result;
-        }
+        $idLang = Context::getContext()->language->id;
+        $sql = 'SELECT hbi.`id`, hbl.`hotel_name` FROM `'._DB_PREFIX_.'htl_branch_info` hbi
+            LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+            ON (hbl.`id` = hbi.`id` AND hbl.`id_lang` = '.(int)$idLang.')
+            WHERE hbi.`id` NOT IN (SELECT DISTINCT id_hotel FROM `'._DB_PREFIX_.'htl_branch_features`)';
 
-        return false;
+        return Db::getInstance()->executeS($sql);
     }
 
     /**
@@ -206,12 +210,9 @@ class HotelBranchInformation extends ObjectModel
      */
     public function getFeaturesOfHotelByHotelId($id_hotel)
     {
-        $result = Db::getInstance()->executeS('SELECT feature_id FROM `'._DB_PREFIX_.'htl_branch_features` WHERE id_hotel='.$id_hotel);
-        if ($result) {
-            return $result;
-        }
-
-        return false;
+        return Db::getInstance()->executeS(
+            'SELECT feature_id FROM `'._DB_PREFIX_.'htl_branch_features` WHERE id_hotel='.(int)$id_hotel
+        );
     }
 
     /**
@@ -223,12 +224,9 @@ class HotelBranchInformation extends ObjectModel
      */
     public static function getHotelIdByIdCategory($id_category)
     {
-        $result = Db::getInstance()->getValue('SELECT id FROM `'._DB_PREFIX_.'htl_branch_info` WHERE id_category='.$id_category);
-        if ($result) {
-            return $result;
-        }
-
-        return false;
+        return Db::getInstance()->getValue(
+            'SELECT `id` FROM `'._DB_PREFIX_.'htl_branch_info` WHERE id_category = '.(int)$id_category
+        );
     }
 
     /**
@@ -240,12 +238,9 @@ class HotelBranchInformation extends ObjectModel
      */
     public function getCategoryDataByIdCategory($id_category)
     {
-        $result = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'category_lang` WHERE id_category='.$id_category);
-        if ($result) {
-            return $result;
-        }
-
-        return false;
+        return Db::getInstance()->getRow(
+            'SELECT * FROM `'._DB_PREFIX_.'category_lang` WHERE id_category = '.(int)$id_category
+        );
     }
 
     /**
@@ -255,43 +250,51 @@ class HotelBranchInformation extends ObjectModel
      */
     public function hotelBranchInfoByCategoryId($cat_id)
     {
-        $result = Db::getInstance()->executeS('SELECT `id`, `hotel_name`, `id_category` FROM `'._DB_PREFIX_.'htl_branch_info` WHERE `id_category` ='.(int)$cat_id.' AND `active`=1');
+        $idLang = Context::getContext()->language->id;
+        $sql = 'SELECT hbi.`id`, hbi.`id_category`, hbl.`hotel_name` FROM `'._DB_PREFIX_.'htl_branch_info` hbi
+            LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+            ON (hbl.`id` = hbi.`id` AND hbl.`id_lang` = '.(int)$idLang.')
+            WHERE hbi.`id_category` = '.(int)$cat_id.' AND `active` = 1';
 
-        if ($result) {
-            return $result;
-        }
-
-        return false;
+        return Db::getInstance()->executeS($sql);
     }
 
     /**
      * [getHotelCategoryTree : Select category info by name of the category]
-     * @param  [string] $search_data [description]
+     * @param  [string] $searchData [description]
      * @return [type]              [description]
      */
-    public function getHotelCategoryTree($search_data)
+    public function getHotelCategoryTree($searchData)
     {
         $context = Context::getContext();
-        return Db::getInstance()->executeS('SELECT cl.`id_category` , cl.`name`
-                FROM `'._DB_PREFIX_.'category_lang` AS cl
-                INNER JOIN `'._DB_PREFIX_.'category` AS c ON (cl.id_category = c.id_category)
-                WHERE cl.name LIKE \'%'.pSQL($search_data).'%\' AND c.level_depth NOT IN (0, 1, 5) and id_lang='.(int)$context->language->id.' GROUP BY cl.`name`');
+        return Db::getInstance()->executeS(
+            'SELECT cl.`id_category` , cl.`name`
+            FROM `'._DB_PREFIX_.'category_lang` AS cl
+            INNER JOIN `'._DB_PREFIX_.'category` AS c ON (cl.`id_category` = c.`id_category`)
+            WHERE cl.`name` LIKE \'%'.pSQL($searchData).'%\'
+            AND c.`level_depth` NOT IN (0, 1, 5) and cl.`id_lang`='.(int)$context->language->id.'
+            GROUP BY cl.`name`'
+        );
     }
 
     /**
      * [getMapFormatHotelsInfo To get address ofthe hotel in the format to get the latitude and longitude of the place by using address]
      * @return [array] [description]
      */
-    public function getMapFormatHotelsInfo($active = false, $id_lang = false)
+    public function getMapFormatHotelsInfo($active = false, $idLang = false)
     {
-        if (!$id_lang) {
+        if (!$idLang) {
             $context = Context::getContext();
-            $id_lang = $context->language->id;
+            $idLang = $context->language->id;
         }
 
-        $sql = "SELECT hbi.`hotel_name`, hbi.`phone`, hbi.`email`, hbi.`city`, cl.`name` AS country, hbi.`zipcode`, hbi.`address`, hbi.`latitude`, hbi.`longitude`, hbi.`map_formated_address`, hbi.`map_input_text`
-            FROM `"._DB_PREFIX_."htl_branch_info` AS hbi
-            INNER JOIN `"._DB_PREFIX_."country_lang` AS cl ON (cl.id_country = hbi.country_id AND cl.id_lang = ".(int)$id_lang.")
+        $sql = 'SELECT hbl.`hotel_name`, hbi.`phone`, hbi.`email`, hbi.`city`, cl.`name` AS country, hbi.`zipcode`,
+            hbi.`address`, hbi.`latitude`, hbi.`longitude`, hbi.`map_formated_address`, hbi.`map_input_text`
+            FROM `'._DB_PREFIX_.'htl_branch_info` AS hbi
+            INNER JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hbl
+            ON (hbl.`id` = hbi.`id` AND hbl.`id_lang` = '.(int)$idLang.')
+            INNER JOIN `'._DB_PREFIX_.'country_lang` AS cl
+            ON (cl.`id_country` = hbi.`country_id` AND cl.`id_lang` = '.(int)$idLang.")
             WHERE hbi.`latitude` != 0 AND hbi.`longitude` != 0";
 
         if ($active !== false) {
@@ -300,23 +303,7 @@ class HotelBranchInformation extends ObjectModel
             }
         }
 
-        $result = Db::getInstance()->executeS($sql);
-        if ($result) {
-            return $result;
-        }
-        return false;
-
-        // $htls_array = Db::getInstance()->executeS('SELECT `hotel_name`, `city`, `country_id`, `zipcode` FROM `'._DB_PREFIX_.'htl_branch_info`');
-        // if ($htls_array) {
-        //     $hotel_map_array = array();
-        //     foreach ($htls_array as $hotel) {
-        //         $country = new Country($hotel['country_id']);
-        //         $hotel_map_array[] = $hotel['hotel_name'].', '.$hotel['city'].', '.$country->iso_code.' '.$hotel['zipcode'].', '.$country->name[1];
-        //     }
-        //     return $hotel_map_array;
-        // } else {
-        //     return false;
-        // }
+        return Db::getInstance()->executeS($sql);
     }
 
     public function getAllHotels()
@@ -367,24 +354,34 @@ class HotelBranchInformation extends ObjectModel
                 foreach ($idsProduct as $key_prod => $value_prod) {
                     $objProduct = new Product($value_prod['id_product']);
                     if (!$objProduct->delete()) {
-                        $contextController->errors[] = $this->moduleInstance->l('Some error has occurred while deleting products of this hotel.', 'HotelBranchInformation');
+                        $contextController->errors[] = $this->moduleInstance->l(
+                            'Some error has occurred while deleting products of this hotel.',
+                            'HotelBranchInformation'
+                        );
                     }
                 }
             }
             $objHotelfeatures = new HotelBranchFeatures();
             $objHotelImage = new HotelImage();
             if (!$objHotelfeatures->deleteBranchFeaturesByHotelId($idHotel)) {
-                $contextController->errors[] = $this->moduleInstance->l('Some error has occurred while deleting hotel feature data.', 'HotelBranchInformation');
+                $contextController->errors[] = $this->moduleInstance->l(
+                    'Some error has occurred while deleting hotel feature data.',
+                    'HotelBranchInformation'
+                );
             }
             $hotelAllImages = $objHotelImage->getAllImagesByHotelId($idHotel);
             if ($hotelAllImages) {
                 foreach ($hotelAllImages as $key_img => $value_img) {
-                    $path_img = _PS_MODULE_DIR_.'hotelreservationsystem/views/img/hotel_img/'.$value_img['hotel_image_id'].'.jpg';
+                    $path_img = _PS_MODULE_DIR_.'hotelreservationsystem/views/img/hotel_img/'.
+                    $value_img['hotel_image_id'].'.jpg';
                     @unlink($path_img);
                 }
             }
             if (!$objHotelImage->deleteByHotelId($idHotel)) {
-                $contextController->errors[] = $this->moduleInstance->l('Some error has occurred while deleting images of hotel.', 'HotelBranchInformation');
+                $contextController->errors[] = $this->moduleInstance->l(
+                    'Some error has occurred while deleting images of hotel.',
+                    'HotelBranchInformation'
+                );
             }
         }
         if (!count($contextController->errors)) {
@@ -402,42 +399,56 @@ class HotelBranchInformation extends ObjectModel
         if (!$parent_cat) {
             $parent_cat = Category::getRootCategory()->id;
         }
-
         if ($ishotel && $idHotel) {
-            $cat_id_hotel = Db::getInstance()->getValue('SELECT `id_category` FROM `'._DB_PREFIX_.'htl_branch_info` WHERE id='.$idHotel);
-            if ($cat_id_hotel) {
-                $category = new Category($cat_id_hotel);
-                $category->name = array();
-                $category->description = array();
-                $category->link_rewrite = array();
-
+            $catIdHotel = Db::getInstance()->getValue(
+                'SELECT `id_category` FROM `'._DB_PREFIX_.'htl_branch_info` WHERE id='.$idHotel
+            );
+            if ($catIdHotel) {
+                $category = new Category($catIdHotel);
                 foreach (Language::getLanguages(true) as $lang) {
-                    $category->name[$lang['id_lang']] = $name;
-                    $category->description[$lang['id_lang']] =  $this->moduleInstance->l('Hotel Branch Category', 'HotelBranchInformation');
-                    $category->link_rewrite[$lang['id_lang']] = Tools::link_rewrite($name);
+                    if (is_array($name) && isset($name[$lang['id_lang']])) {
+                        $catName = $name[$lang['id_lang']];
+                    } else {
+                        $catName = $name;
+                    }
+                    $category->name[$lang['id_lang']] = $catName;
+                    $category->description[$lang['id_lang']] =  $this->moduleInstance->l(
+                        'Hotel Branch Category',
+                        'HotelBranchInformation'
+                    );
+                    $category->link_rewrite[$lang['id_lang']] = Tools::link_rewrite($catName);
                 }
                 $category->id_parent = $parent_cat;
                 $category->groupBox = $group_ids;
                 $category->save();
                 $cat_id = $category->id;
-
                 return $cat_id;
             }
         }
-        $categoryExists = Category::searchByNameAndParentCategoryId($context->language->id, $name, $parent_cat);
-
-        if ($categoryExists) {
+        if (is_array($name) && isset($name[$context->language->id])) {
+            $catName = $name[$context->language->id];
+        } else {
+            $catName = $name;
+        }
+        if ($categoryExists = Category::searchByNameAndParentCategoryId(
+            $context->language->id,
+            $catName,
+            $parent_cat
+        )) {
             return $categoryExists['id_category'];
         } else {
             $category = new Category();
-            $category->name = array();
-            $category->description = array();
-            $category->link_rewrite = array();
-
             foreach (Language::getLanguages(true) as $lang) {
-                $category->name[$lang['id_lang']] = $name;
-                $category->description[$lang['id_lang']] = $this->moduleInstance->l('Hotel Branch Category', 'HotelBranchInformation');
-                $category->link_rewrite[$lang['id_lang']] = Tools::link_rewrite($name);
+                if (is_array($name) && isset($name[$lang['id_lang']])) {
+                    $catName = $name[$lang['id_lang']];
+                } else {
+                    $catName = $name;
+                }
+                $category->name[$lang['id_lang']] = $catName;
+                $category->description[$lang['id_lang']] = $this->moduleInstance->l(
+                    'Hotel Branch Category', 'HotelBranchInformation'
+                );
+                $category->link_rewrite[$lang['id_lang']] = Tools::link_rewrite($catName);
             }
             $category->id_parent = $parent_cat;
             $category->groupBox = $group_ids;

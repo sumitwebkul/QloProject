@@ -388,8 +388,8 @@ class AdminHotelFeaturePricesSettingsController extends ModuleAdminController
                     $roomInfoByIdProduct = $hotelRoomType->getRoomTypeInfoByIdProduct($product['id_product']);
                     $idHotel = $roomInfoByIdProduct['id_hotel'];
                     if (isset($idHotel) && $idHotel) {
-                        $hotelBranchInformation = new HotelBranchInformation($idHotel);
-                        $product['name'].= ' / '.$hotelBranchInformation->hotel_name;
+                        $onjBranchInfo = new HotelBranchInformation($idHotel, $this->context->language->id);
+                        $product['name'].= ' / '.$onjBranchInfo->hotel_name;
                     }
                 }
                 echo Tools::jsonEncode($productsByName, true);

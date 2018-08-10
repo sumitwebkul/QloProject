@@ -115,10 +115,9 @@ class AdminAddHotelController extends ModuleAdminController
 
         if ($this->display == 'edit') {
             $idHotel = Tools::getValue('id');
-            $objHtlBranch = new HotelBranchInformation();
-            $hotel_branch_info = $objHtlBranch->hotelBranchInfoById($idHotel);
+            $hotelBranchInfo = (array) (new HotelBranchInformation($idHotel));
 
-            $statesbycountry = State::getStatesByIdCountry($hotel_branch_info['country_id']);
+            $statesbycountry = State::getStatesByIdCountry($hotelBranchInfo['country_id']);
 
             $states = array();
             if ($statesbycountry) {
@@ -130,7 +129,7 @@ class AdminAddHotelController extends ModuleAdminController
             $smartyVars['edit'] =  1;
             $smartyVars['country_var'] =  $countries;
             $smartyVars['state_var'] =  $states;
-            $smartyVars['hotel_info'] =  $hotel_branch_info;
+            $smartyVars['hotel_info'] =  $hotelBranchInfo;
             //Hotel Images
             $objHotelImage = new HotelImage();
             $hotelAllImages = $objHotelImage->getAllImagesByHotelId($idHotel);
@@ -142,9 +141,17 @@ class AdminAddHotelController extends ModuleAdminController
                 $smartyVars['hotelImages'] =  $hotelAllImages;
             }
         }
+
         $smartyVars['enabledDisplayMap'] =  Configuration::get('WK_GOOGLE_ACTIVE_MAP');
         $smartyVars['ps_img_dir'] = _PS_IMG_.'l/';
+
         $this->context->smarty->assign($smartyVars);
+
+        Media::addJsDef(
+            array(
+                'img_dir_l' => _PS_IMG_.'l/',
+            )
+        );
         $this->fields_form = array(
             'submit' => array(
                 'title' => $this->l('Save'),
@@ -156,18 +163,14 @@ class AdminAddHotelController extends ModuleAdminController
     public function processSave()
     {
         $idHotel = Tools::getValue('id');
-        $hotel_name = Tools::getValue('hotel_name');
         $phone = Tools::getValue('phone');
         $email = Tools::getValue('email');
         $check_in = Tools::getValue('check_in');
         $check_out = Tools::getValue('check_out');
-        $short_description = Tools::getValue('short_description');
-        $description = Tools::getValue('description');
         $rating = Tools::getValue('hotel_rating');
         $city = Tools::getValue('hotel_city');
         $state = Tools::getValue('hotel_state');
         $country = Tools::getValue('hotel_country');
-        $policies = Tools::getValue('hotel_policies');
         $zipcode = Tools::getValue('hotel_postal_code');
         $address = Tools::getValue('address');
         $active = Tools::getValue('ENABLE_HOTEL');
@@ -176,12 +179,62 @@ class AdminAddHotelController extends ModuleAdminController
         $map_formated_address = Tools::getValue('locformatedAddr');
         $map_input_text = Tools::getValue('googleInputField');
 
-        if ($hotel_name == '') {
-            $this->errors[] = $this->l('Hotel name is required field.');
-        } elseif (!Validate::isGenericName($hotel_name)) {
-            $this->errors[] = $this->l('Hotel name must not have Invalid characters <>;=#{}');
+        // check if field is atleast in default language. Not available in default prestashop
+        $defaultLangId = Configuration::get('PS_LANG_DEFAULT');
+        $objDefaultLanguage = Language::getLanguage((int) $defaultLangId);
+        $languages = Language::getLanguages(false);
+        if (!trim(Tools::getValue('hotel_name_'.$defaultLangId))) {
+            $this->errors[] = $this->l('Hotel name is required at least in ').
+            $objDefaultLanguage['name'];
+        } else {
+            foreach ($languages as $lang) {
+                // validate non required fields
+                if (trim(Tools::getValue('hotel_name_'.$lang['id_lang']))) {
+                    if (!Validate::isGenericName(Tools::getValue('hotel_name_'.$lang['id_lang']))) {
+                        $this->errors[] = $this->l('Invalid Hotel name in ').$lang['name'];
+                    }
+                }
+                if ($shortDescription = Tools::getValue(
+                    'short_description_'.$lang['id_lang']
+                )) {
+                    if (!Validate::isCleanHtml(
+                        $shortDescription,
+                        (int) Configuration::get('PS_ALLOW_HTML_IFRAME')
+                    )) {
+                        $this->errors[] = sprintf(
+                            $this->l('Short description is not valid in %s'),
+                            $lang['name']
+                        );
+                    }
+                }
+                if ($description = Tools::getValue(
+                    'short_description_'.$lang['id_lang']
+                )) {
+                    if (!Validate::isCleanHtml(
+                        $description,
+                        (int) Configuration::get('PS_ALLOW_HTML_IFRAME')
+                    )) {
+                        $this->errors[] = sprintf(
+                            $this->l('Description is not valid in %s'),
+                            $lang['name']
+                        );
+                    }
+                }
+                if ($policies = Tools::getValue(
+                    'policies_'.$lang['id_lang']
+                )) {
+                    if (!Validate::isCleanHtml(
+                        $policies,
+                        (int) Configuration::get('PS_ALLOW_HTML_IFRAME')
+                    )) {
+                        $this->errors[] = sprintf(
+                            $this->l('policies are not valid in %s'),
+                            $lang['name']
+                        );
+                    }
+                }
+            }
         }
-
         if (!$phone) {
             $this->errors[] = $this->l('Phone number is required field.');
         } elseif (!Validate::isPhoneNumber($phone)) {
@@ -237,91 +290,136 @@ class AdminAddHotelController extends ModuleAdminController
 
         if (!count($this->errors)) {
             if ($idHotel) {
-                $obj_hotel_info = new HotelBranchInformation($idHotel);
+                $objHotelBranch = new HotelBranchInformation($idHotel);
             } else {
-                $obj_hotel_info = new HotelBranchInformation();
+                $objHotelBranch = new HotelBranchInformation();
             }
-
-            if ($obj_hotel_info->id) {
+            if ($objHotelBranch->id) {
                 if (!$active) {
-                    $obj_htl_rm_info = new HotelRoomType();
-                    $ids_product = $obj_htl_rm_info->getIdProductByHotelId($obj_hotel_info->id);
-                    if (isset($ids_product) && $ids_product) {
-                        foreach ($ids_product as $key_prod => $value_prod) {
-                            $obj_product = new Product($value_prod['id_product']);
-                            if ($obj_product->active) {
-                                $obj_product->toggleStatus();
+                    $objHtlRoomInfo = new HotelRoomType();
+                    $idsProduct = $objHtlRoomInfo->getIdProductByHotelId($objHotelBranch->id);
+                    if (isset($idsProduct) && $idsProduct) {
+                        foreach ($idsProduct as $product) {
+                            $objProduct = new Product($product['id_product']);
+                            if ($objProduct->active) {
+                                $objProduct->toggleStatus();
                             }
                         }
                     }
                 }
             }
-
-            $obj_hotel_info->active = $active;
-            $obj_hotel_info->hotel_name = $hotel_name;
-            $obj_hotel_info->phone = $phone;
-            $obj_hotel_info->email = $email;
-            $obj_hotel_info->check_in = $check_in;
-            $obj_hotel_info->check_out = $check_out;
-            $obj_hotel_info->short_description = $short_description;
-            $obj_hotel_info->description = $description;
-            $obj_hotel_info->rating = $rating;
-            $obj_hotel_info->city = $city;
-            $obj_hotel_info->state_id = $state;
-            $obj_hotel_info->country_id = $country;
-            $obj_hotel_info->zipcode = $zipcode;
-            $obj_hotel_info->policies = $policies;
-            $obj_hotel_info->address = $address;
-            $obj_hotel_info->latitude = $latitude;
-            $obj_hotel_info->longitude = $longitude;
-            $obj_hotel_info->map_formated_address = $map_formated_address;
-            $obj_hotel_info->map_input_text = $map_input_text;
-            $obj_hotel_info->save();
-
-            $new_hotel_id = $obj_hotel_info->id;
-            if ($new_hotel_id) {
-                $grp_ids = array();
-                $data_grp_ids = Group::getGroups($this->context->language->id);
-
-                foreach ($data_grp_ids as $key => $value) {
-                    $grp_ids[] = $value['id_group'];
-                }
-                //test
-                $country_name = (new Country())->getNameById($this->context->language->id, $country);
-                $cat_country = $obj_hotel_info->addCategory($country_name, false, $grp_ids);
-
-                if ($cat_country) {
-                    if ($state) {
-                        $state_name = (new State())->getNameById($state);
-                        $cat_state = $obj_hotel_info->addCategory($state_name, $cat_country, $grp_ids);
-                    } else {
-                        $cat_state = $obj_hotel_info->addCategory($city, $cat_country, $grp_ids);
-                    }
-                }
-                if ($cat_state) {
-                    $cat_city = $obj_hotel_info->addCategory($city, $cat_state, $grp_ids);
+            $objHotelBranch->active = $active;
+            // lang fields
+            $hotelCatName = array();
+            foreach ($languages as $lang) {
+                if (!trim(Tools::getValue('hotel_name_'.$lang['id_lang']))) {
+                    $objHotelBranch->hotel_name[$lang['id_lang']] = Tools::getValue(
+                        'hotel_name_'.$defaultLangId
+                    );
+                } else {
+                    $objHotelBranch->hotel_name[$lang['id_lang']] = Tools::getValue(
+                        'hotel_name_'.$lang['id_lang']
+                    );
                 }
 
-                if ($cat_city) {
-                    $cat_hotel = $obj_hotel_info->addCategory($hotel_name, $cat_city, $grp_ids, 1, $new_hotel_id);
+                $cleanShortDescription = Tools::getDescriptionClean(
+                    Tools::getValue('short_description_'.$lang['id_lang'])
+                );
+                //Remove TinyMCE's Non-Breaking Spaces
+                $cleanShortDescription = str_replace(chr(0xC2).chr(0xA0), "", $cleanShortDescription);
+                if (!trim($cleanShortDescription)) {
+                    $objHotelBranch->short_description[$lang['id_lang']] = Tools::getValue(
+                        'short_description_'.$defaultLangId
+                    );
+                } else {
+                    $objHotelBranch->short_description[$lang['id_lang']] = Tools::getValue(
+                        'short_description_'.$lang['id_lang']
+                    );
                 }
-
-                if ($cat_hotel) {
-                    $obj_hotel_info = new HotelBranchInformation($new_hotel_id);
-                    $obj_hotel_info->id_category = $cat_hotel;
-                    $obj_hotel_info->save();
+                $cleanDescription = Tools::getDescriptionClean(
+                    Tools::getValue('description_'.$lang['id_lang'])
+                );
+                //Remove TinyMCE's Non-Breaking Spaces
+                $cleanDescription = str_replace(chr(0xC2).chr(0xA0), "", $cleanDescription);
+                if (!trim($cleanDescription)) {
+                    $objHotelBranch->description[$lang['id_lang']] = Tools::getValue(
+                        'description_'.$defaultLangId
+                    );
+                } else {
+                    $objHotelBranch->description[$lang['id_lang']] = Tools::getValue(
+                        'description_'.$lang['id_lang']
+                    );
+                }
+                $cleanPolicies = Tools::getDescriptionClean(
+                    Tools::getValue('policies_'.$lang['id_lang'])
+                );
+                //Remove TinyMCE's Non-Breaking Spaces
+                $cleanPolicies = str_replace(chr(0xC2).chr(0xA0), "", $cleanPolicies);
+                if (!trim($cleanPolicies)) {
+                    $objHotelBranch->policies[$lang['id_lang']] = Tools::getValue(
+                        'policies_'.$defaultLangId
+                    );
+                } else {
+                    $objHotelBranch->policies[$lang['id_lang']] = Tools::getValue(
+                        'policies_'.$lang['id_lang']
+                    );
                 }
             }
+            $objHotelBranch->phone = $phone;
+            $objHotelBranch->email = $email;
+            $objHotelBranch->check_in = $check_in;
+            $objHotelBranch->check_out = $check_out;
+            $objHotelBranch->rating = $rating;
+            $objHotelBranch->city = $city;
+            $objHotelBranch->state_id = $state;
+            $objHotelBranch->country_id = $country;
+            $objHotelBranch->zipcode = $zipcode;
+            $objHotelBranch->address = $address;
+            $objHotelBranch->latitude = $latitude;
+            $objHotelBranch->longitude = $longitude;
+            $objHotelBranch->map_formated_address = $map_formated_address;
+            $objHotelBranch->map_input_text = $map_input_text;
+            $objHotelBranch->save();
 
+            if ($newIdHotel = $objHotelBranch->id) {
+                $groupIds = array();
+                if ($dataGroupIds = Group::getGroups($this->context->language->id)) {
+                    foreach ($dataGroupIds as $key => $value) {
+                        $groupIds[] = $value['id_group'];
+                    }
+                }
+                $objCountry = new Country();
+                $countryName = $objCountry->getNameById($this->context->language->id, $country);
+                if ($catCountry = $objHotelBranch->addCategory($countryName, false, $groupIds)) {
+                    if ($state) {
+                        $stateName = (new State())->getNameById($state);
+                        $catState = $objHotelBranch->addCategory($stateName, $catCountry, $groupIds);
+                    } else {
+                        $catState = $objHotelBranch->addCategory($city, $catCountry, $groupIds);
+                    }
+                    if ($catState) {
+                        if ($catCity = $objHotelBranch->addCategory($city, $catState, $groupIds)) {
+                            $hotelCatName = $objHotelBranch->hotel_name;
+                            if ($catHotel = $objHotelBranch->addCategory(
+                                $hotelCatName, $catCity, $groupIds, 1, $newIdHotel
+                            )) {
+                                $objHotelBranch = new HotelBranchInformation($newIdHotel);
+                                $objHotelBranch->id_category = $catHotel;
+                                $objHotelBranch->save();
+                            }
+                        }
+                    }
+                }
+            }
             if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
                 if ($idHotel) {
                     Tools::redirectAdmin(
-                        self::$currentIndex.'&id='.(int) $new_hotel_id.'&update'.$this->table.'&conf=4&token='.
+                        self::$currentIndex.'&id='.(int) $newIdHotel.'&update'.$this->table.'&conf=4&token='.
                         $this->token
                     );
                 } else {
                     Tools::redirectAdmin(
-                        self::$currentIndex.'&id='.(int) $new_hotel_id.'&update'.$this->table.'&conf=3&token='.
+                        self::$currentIndex.'&id='.(int) $newIdHotel.'&update'.$this->table.'&conf=3&token='.
                         $this->token
                     );
                 }
@@ -332,20 +430,19 @@ class AdminAddHotelController extends ModuleAdminController
                     Tools::redirectAdmin(self::$currentIndex.'&conf=3&token='.$this->token);
                 }
             }
+        }
+        if ($idHotel) {
+            $this->display = 'edit';
         } else {
-            if ($idHotel) {
-                $this->display = 'edit';
-            } else {
-                $this->display = 'add';
-            }
+            $this->display = 'add';
         }
     }
 
     public function ajaxProcessStateByCountryId()
     {
-        $country_id = Tools::getValue('id_country');
+        $idCountry = Tools::getValue('id_country');
         $states = array();
-        $statesbycountry = State::getStatesByIdCountry($country_id);
+        $statesbycountry = State::getStatesByIdCountry($idCountry);
         if ($statesbycountry) {
             $states = array();
             foreach ($statesbycountry as $key => $value) {
@@ -385,7 +482,11 @@ class AdminAddHotelController extends ModuleAdminController
                     die(Tools::jsonEncode(array('hasError' => true)));
                 }
             } else {
-                die(Tools::jsonEncode(array('hasError' => true, 'message' => $_FILES['hotel_image']['name'].': '.$invalidImg)));
+                die(
+                    Tools::jsonEncode(
+                        array('hasError' => true, 'message' => $_FILES['hotel_image']['name'].': '.$invalidImg)
+                    )
+                );
             }
         } else {
             die(Tools::jsonEncode(array('hasError' => true)));
@@ -402,6 +503,7 @@ class AdminAddHotelController extends ModuleAdminController
                 $objHtlImage->cover = 0;
                 $objHtlImage->save();
             }
+
             $objHtlImage = new HotelImage((int) $idImage);
             $objHtlImage->cover = 1;
             if ($objHtlImage->update()) {
@@ -450,11 +552,12 @@ class AdminAddHotelController extends ModuleAdminController
         $language = $this->context->language;
         $country = $this->context->country;
         $WK_GOOGLE_API_KEY = Configuration::get('WK_GOOGLE_API_KEY');
-        $this->addJs("https://maps.googleapis.com/maps/api/js?key=$WK_GOOGLE_API_KEY&libraries=places&language=$language->iso_code&region=$country->iso_code");
-
+        $this->addJs(
+            'https://maps.googleapis.com/maps/api/js?key='.$WK_GOOGLE_API_KEY.'&libraries=places&language='.
+            $language->iso_code.'&region='.$country->iso_code
+        );
         //tinymce
         $this->addJS(_PS_JS_DIR_.'tiny_mce/tiny_mce.js');
-
         if (version_compare(_PS_VERSION_, '1.6.0.11', '>')) {
             $this->addJS(_PS_JS_DIR_.'admin/tinymce.inc.js');
         } else {

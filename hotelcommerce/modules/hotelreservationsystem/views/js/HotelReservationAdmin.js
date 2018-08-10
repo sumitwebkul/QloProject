@@ -128,8 +128,17 @@ $(document).ready(function() {
     $('.add_feature_to_list').on('click', function() {
         if ($('.child_ftr').val() != '') {
             $("#chld_ftr_err_p").text('');
-            var html = '<div class="child-feature-div"><div class="col-sm-3"></div><div class="col-sm-7 add_chld_ftr_div">' + $('.child_ftr').val() + '<a style="color: #555;" href="#" class="pull-right remove-chld-ftr"><i class="icon-trash"></i></a></div><input class="chld_ftr_arr" name="child_featurs[]" type="hidden" value="' + $('.child_ftr').val() + '"></div>';
-            $('.added_feature').append(html);
+            var html = '<div class="child-feature-div">';
+                html += '<div class="col-sm-3"></div>';
+                html += '<div class="col-sm-6">';
+                    html += '<input class="chld_ftr_arr" name="child_featurs[]" type="text" value="' + $('.child_ftr').val() + '">';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                    html += '<a style="color: #555;" href="#" class="pull-right remove-chld-ftr btn btn-default">';
+                    html += '<i class="icon-trash"></i></a>';
+                html += '</div>';
+            html += '</div>';
+            $('.added_child_features').append(html);
             $('.child_ftr').val('');
         } else {
             $("#chld_ftr_err_p").text(chld_ftr_text_err);
@@ -164,21 +173,31 @@ $(document).ready(function() {
         $('.parent_ftr').val('');
         $('.parent_ftr_id').val('');
         $('.position').val('');
-        $('.added_feature').empty();
+        $('.added_child_features').empty();
         $(".error_text").text('');
     });
 
     $('.edit_feature').on('click', function(e) {
         e.preventDefault();
-        $('.added_feature').empty();
+        $('.added_child_features').empty();
         var feature = $(this).attr('data-feature');
         var dat = JSON.parse(feature);
         $('.parent_ftr').val(dat.name);
         $('.parent_ftr_id').val(dat.id);
         $('.position').val(dat.position);
         $.each(dat.children, function(key, value) {
-            var html = '<div class="child-feature-div"><div class="col-sm-3"></div><div class="edit_chld_ftr_div col-sm-7">' + value.name + '<a href="#" class="pull-right remove-chld-ftr"><i class="icon-trash"></i></a></div><input class="chld_ftr_arr" name="child_featurs[]" type="hidden" value="' + value.id + '"></div>';
-            $('.added_feature').append(html);
+            var html = '<div class="child-feature-div row">';
+                html += '<div class="col-sm-3"></div>';
+                html += '<div class="edit_chld_ftr_div col-sm-6">';
+                    html += '<input class="chld_ftr_arr" name="child_featurs[]" type="text" value="' + value.name + '">';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                    html += '<a href="#" class="pull-right remove-chld-ftr btn btn-default">';
+                        html += '<i class="icon-trash"></i>';
+                    html += '</a>';
+                html += '</div>';
+            html += '</div>';
+            $('.added_child_features').append(html);
         });
         $('#basicModal_addNewFeature').modal('show');
     });
@@ -238,10 +257,6 @@ $(document).ready(function() {
                     return [true];
             }
         });
-
-        //var count = $("." + check_css_condition_var).length;
-        //$("td."+check_css_condition_var).eq(0).css('border-radius','50% 0 0 50%');
-        //$("td."+check_css_condition_var).eq(count-1).css('border-radius','0 50% 50% 0');
     } else {
         $(".hotel_date").datepicker({
             dateFormat: 'dd-mm-yy',
@@ -268,12 +283,6 @@ $(document).ready(function() {
         beforeShowDay: function (date) {
             return highlightDateBorder($("#to_date").val(), date);
         },
-        /*onSelect: function(selectedDate) {
-            var date_format = selectedDate.split("-");
-            var selectedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date(date_format[2], date_format[1] - 1, date_format[0])));
-            selectedDate.setDate(selectedDate.getDate() - 1);
-            $("#from_date").datepicker("option", "maxDate", selectedDate);
-        }*/
     });
 
     $("#hotel_id").on('change', function() {
@@ -308,6 +317,7 @@ $(document).ready(function() {
             }
         }
     });
+
     /*For swaping rooms in the modal*/
     $("#realloc_allocated_rooms").on('click', function(e) {
         $(".error_text").text('');
@@ -358,39 +368,6 @@ $(document).ready(function() {
         if (html != '')
             $("#realloc_avail_rooms").append(html);
     });
-
-    // In RoomBookingController
-    //
-    // $('.avai_comment, .par_comment').hide();
-
-    // $('.avai_bk_type').on('change', function()
-    // {
-    //     var id_room = $(this).attr('data-id-room');
-    //     var booking_type = $(this).val();
-
-    //     if (booking_type == 1)
-    //     {
-    //         $('#comment_'+id_room).hide().val('');
-    //     }
-    //     else if (booking_type == 2)
-    //         $('#comment_'+id_room).show();
-    // });
-
-    // $('.par_bk_type').on('change', function()
-    // {
-    //     var id_room = $(this).attr('data-id-room');
-    //     var sub_key = $(this).attr('data-sub-key');
-    //     var booking_type = $(this).val();
-
-    //     if (booking_type == 1)
-    //     {
-    //         $('#comment_'+id_room+'_'+sub_key).hide().val('');
-    //     }
-    //     else if (booking_type == 2)
-    //     {
-    //         $('#comment_'+id_room+'_'+sub_key).show();
-    //     }
-    // });
 
     $('body').on('click', '.avai_add_cart', function() {
         $current_btn = $(this);
@@ -676,49 +653,6 @@ $(document).ready(function() {
             return false;
         }
     });
-
-    // var frm_date = new Date($('#from_date').val());
-    // var date_to = new Date($('#to_date').val());
-    // data = JSON.parse(calender_info);
-
-    // while (frm_date.getDate() <= date_to.getDate())
-    // {
-    //     if (data.info['available'].length >= $('#num-rooms').val())
-    //  {
-    //      $('.ui-datepicker-calendar').find("td[data-month="+frm_date.getMonth()+"]").find("a:contains("+frm_date.getDate()+")").parent().css('background-color','green');
-    //      var dd = frm_date.getDate()+1;
-    //         var mm = frm_date.getMonth()+1;
-    //         var yyyy = frm_date.getFullYear();
-    //         if (mm<10)
-    //         {
-    //          frm_dt = yyyy+'-0'+mm+'-'+dd;
-    //         }
-    //         else
-    //         {
-    //          frm_dt = yyyy+'-'+mm+'-'+dd;
-    //         }
-    //      frm_date = new Date(frm_dt);
-    //  }
-    //  else
-    //  {
-
-    //      $('.ui-datepicker-calendar').find("td[data-month="+frm_date.getMonth()+"]").find("a:contains("+frm_date.getDate()+")").parent().css('background-color','gold');
-    //      var dd = frm_date.getDate()+1;
-    //         var mm = frm_date.getMonth()+1;
-    //         var yyyy = frm_date.getFullYear();
-    //         if (mm<10)
-    //         {
-    //          frm_dt = yyyy+'-0'+mm+'-'+dd;
-    //         }
-    //         else
-    //         {
-    //          frm_dt = yyyy+'-'+mm+'-'+dd;
-    //         }
-    //      frm_date = new Date(frm_dt);
-    //  }
-    // }
-
-    // $('.date_range_search').html($('#from_date').val()+' to '+$('#to_date').val());
 
     /* ---- Book Now page Admin ---- */
 
@@ -1074,7 +1008,7 @@ function showFeaturePriceRuleLangField(lang_iso_code, id_lang)
 }
 
 
-function showHotelLangField(select_lang_name, id_lang)
+function showLangField(select_lang_name, id_lang)
 {
     $('#multi_lang_btn').html(select_lang_name + ' <span class="caret"></span>');
     $('.wk_text_field_all').hide();

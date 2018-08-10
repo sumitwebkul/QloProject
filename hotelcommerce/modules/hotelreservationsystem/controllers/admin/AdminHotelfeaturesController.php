@@ -25,16 +25,20 @@ class AdminHotelFeaturesController extends ModuleAdminController
         $this->bootstrap = true;
         $this->table = 'htl_branch_features';
         $this->className = 'HotelBranchFeatures';
+        $this->identifier  = 'id';
+        parent::__construct();
+        $this->display = 'view';
 
         $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'htl_branch_info` hi ON (hi.`id` = a.`id_hotel`)';
+        $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'htl_branch_info_lang` hil
+        ON (hi.`id` = hil.`id` AND hil.id_lang = '.(int)$this->context->language->id.')';
         $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'state` s ON (s.`id_state` = hi.`state_id`)';
         $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (cl.`id_country` = hi.`country_id`
-        AND cl.`id_lang` = '.Configuration::get('PS_LANG_DEFAULT').')';
+        AND cl.`id_lang` = '.(int)$this->context->language->id.')';
 
-        $this->_select .= 'hi.`city` as htl_city, hi.`id` as htl_id, hi.`hotel_name` as htl_name,
+        $this->_select .= 'hi.`city` as htl_city, hi.`id` as htl_id, hil.`hotel_name` as htl_name,
         s.`name` as `state_name`, cl.`name`';
         $this->_group = 'GROUP BY a.`id_hotel`';
-        $this->context = Context::getContext();
 
         $this->fields_list = array(
             'htl_id' => array(
@@ -52,26 +56,23 @@ class AdminHotelFeaturesController extends ModuleAdminController
                 'align' => 'center',
                 'filter_key' => 'hi!city',
             ),
-
             'state_name' => array(
                 'title' => $this->l('State'),
                 'align' => 'center',
                 'filter_key' => 's!name',
             ),
-
             'name' => array(
                 'title' => $this->l('Country'),
                 'align' => 'center',
                 'filter_key' => 'cl!name',
             ),
-
             'date_add' => array(
                 'title' => $this->l('Date Added'),
                 'align' => 'center',
                 'type' => 'datetime',
                 'filter_key' => 'a!date_add',
-            ));
-        $this->identifier  = 'id';
+            )
+        );
         $this->bulk_actions = array(
             'delete' => array(
                 'text' => $this->l('Delete selected'),
@@ -79,7 +80,6 @@ class AdminHotelFeaturesController extends ModuleAdminController
                 'confirm' => $this->l('Delete selected items?')
             )
         );
-        parent::__construct();
     }
 
     public function initToolbar()
@@ -99,18 +99,19 @@ class AdminHotelFeaturesController extends ModuleAdminController
     public function renderList()
     {
         unset($this->toolbar_btn['new']);
+
         $this->addRowAction('edit');
         $this->addRowAction('delete');
+
         return parent::renderList();
     }
 
     public function processDelete()
     {
         if (Validate::isLoadedObject($object = $this->loadObject())) {
-            $object = $this->loadObject();
             if ($object->id) {
-                $obj_branch_features = new HotelBranchFeatures();
-                $delete_htl_ftr = $obj_branch_features->deleteBranchFeaturesByHotelId($object->id_hotel);
+                $objBranchFeatures = new HotelBranchFeatures();
+                $objBranchFeatures->deleteBranchFeaturesByHotelId($object->id_hotel);
             }
         } else {
             $this->errors[] = $this->l('An error occurred while deleting the object.').
@@ -123,8 +124,8 @@ class AdminHotelFeaturesController extends ModuleAdminController
     {
         if (is_array($this->boxes) && !empty($this->boxes)) {
             foreach ($this->boxes as $key => $value) {
-                $obj_branch_features = new HotelBranchFeatures($value);
-                $delete_htl_ftr = $obj_branch_features->deleteBranchFeaturesByHotelId($obj_branch_features->id_hotel);
+                $objBranchFeatures = new HotelBranchFeatures($value);
+                $objBranchFeatures->deleteBranchFeaturesByHotelId($objBranchFeatures->id_hotel);
             }
             parent::processBulkDelete();
         } else {
@@ -132,37 +133,29 @@ class AdminHotelFeaturesController extends ModuleAdminController
         }
     }
 
+    public function renderView()
+    {
+        $objHotelFeatures = new HotelFeatures();
+        $featuresList = $objHotelFeatures->HotelAllCommonFeaturesArray();
+        $this->context->smarty->assign('features_list', $featuresList);
+        return parent::renderView();
+    }
+
     public function renderForm()
     {
-        if (Tools::getValue('addfeatures')) {
-            $obj_hotel_features = new HotelFeatures();
-            $features_list = $obj_hotel_features->HotelAllCommonFeaturesArray();
-            $this->context->smarty->assign('features_list', $features_list);
-            $this->context->smarty->assign('addfeatures', 1);
-        }
-        if ($this->display == 'add') {
-            $obj_hotel_features = new HotelFeatures();
-            $features_list = $obj_hotel_features->HotelAllCommonFeaturesArray();
-            $hotel_info_obj = new HotelBranchInformation();
-            $unassigned_ftrs_hotels = $hotel_info_obj->getUnassignedFeaturesHotelIds();
-            $this->context->smarty->assign('hotels', $unassigned_ftrs_hotels);
-            $this->context->smarty->assign('features_list', $features_list);
-        } elseif ($this->display == 'edit') {
-            $id = Tools::getValue('id');
-            $obj_features = new HotelBranchFeatures($id);
-            $this->context->smarty->assign('edit', 1);
-            $obj_hotel_features = new HotelFeatures();
-            $hotel_info_obj = new HotelBranchInformation();
+        $smartyVars = array();
+        //lang vars
+        $currentLangId = Configuration::get('PS_LANG_DEFAULT');
+        $smartyVars['languages'] = Language::getLanguages(false);
+        $smartyVars['currentLang'] = Language::getLanguage((int) $currentLangId);
+        $smartyVars['ps_img_dir'] = _PS_IMG_.'l/';
+        $this->context->smarty->assign($smartyVars);
 
-            $features_hotel = $hotel_info_obj->getFeaturesOfHotelByHotelId($obj_features->id_hotel);
-            $features_list = $obj_hotel_features->HotelBranchSelectedFeaturesArray($features_hotel);
-
-            $hotels = $hotel_info_obj->hotelsNameAndId();
-            $this->context->smarty->assign('hotel_id', $obj_features->id_hotel);
-            $this->context->smarty->assign('hotels', $hotels);
-            $this->context->smarty->assign('features_list', $features_list);
-        }
-
+        Media::addJsDef(
+            array(
+                'img_dir_l' => _PS_IMG_.'l/',
+            )
+        );
         $this->fields_form = array(
             'submit' => array(
                 'title' => $this->l('Save')
@@ -176,42 +169,28 @@ class AdminHotelFeaturesController extends ModuleAdminController
         if (Tools::getValue('addfeatures')) {
             //Process of assignig features
         } else {
-            $edit_id = Tools::getValue('edit_hotel_id');
-
-            if ($edit_id) {
-                $delete_existing_vals = Db::getInstance()->delete('htl_branch_features', 'id_hotel='.$edit_id);
+            $editHtlId = Tools::getValue('edit_hotel_id');
+            $objBranchFeatures = new HotelBranchFeatures();
+            if ($editHtlId) {
+                $objBranchFeatures->deleteBranchFeaturesByHotelId($editHtlId);
             }
-
-            $id_hotel = Tools::getValue('id_hotel');
-
-            if ($id_hotel) {
-                $hotel_features = Tools::getValue('hotel_fac');
-                $obj_hotel_features = new HotelBranchFeatures();
-                $assigned = $obj_hotel_features->assignFeaturesToHotel($id_hotel, $hotel_features);
-
-                if (!$assigned) {
-                    $this->errors[] = $this->l('Some problem occure while assigning Features to the hotel.');
+            if ($idHotel = Tools::getValue('id_hotel')) {
+                $hotelFeatures = Tools::getValue('hotel_fac');
+                if (!$objHotelFeatures->assignFeaturesToHotel($idHotel, $hotelFeatures)) {
+                    $this->errors[] = $this->l('Some error occured while assigning features to the hotel.');
                 }
 
                 if (empty($this->errors)) {
                     if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
                         Tools::redirectAdmin(
-                            self::$currentIndex.'&id='.(int)$id_hotel.'&update'.$this->table.'&conf=3&token='.
+                            self::$currentIndex.'&id='.(int)$idHotel.'&update'.$this->table.'&conf=3&token='.
                             $this->token
                         );
                     } else {
-                        if ($edit_id) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
-                        } else {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=3&token='.$this->token);
-                        }
+                        Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
                     }
                 } else {
-                    if ($hotel_id) {
-                        $this->display = 'edit';
-                    } else {
-                        $this->display = 'add';
-                    }
+                    $this->display = 'add';
                 }
             } else {
                 $this->errors[] = $this->l('Please select a hotel first.');
@@ -232,45 +211,43 @@ class AdminHotelFeaturesController extends ModuleAdminController
             } elseif (Tools::getValue('error') == 4) {
                 $msg = $this->l('Some error occured. Please try again.');
             }
-
             $this->errors[] = $this->l($msg);
             $this->context->smarty->assign("errors", $this->errors);
         }
         if (Tools::isSubmit('submit_add_btn_feature')) {
-            $prnt_ftr_id = Tools::getValue('parent_ftr_id');
-            $parent_feature = Tools::getValue('parent_ftr');
-            $child_features = Tools::getValue('child_featurs');
+            $parentFeatureId = Tools::getValue('parent_ftr_id');
+            $parentFeatureName = Tools::getValue('parent_ftr');
+            $childFeatures = Tools::getValue('child_featurs');
             $pos = Tools::getValue('position');
-            if (!$parent_feature) {
+            if (!$parentFeatureName) {
                 $error = 1;
             } elseif (empty($pos) || !Validate::isUnsignedInt($pos)) {
                 $error = 2;
-            } elseif (!$child_features) {
+            } elseif (!$childFeatures) {
                 $error = 3;
             }
             if (!isset($error)) {
-                if (isset($prnt_ftr_id) && $prnt_ftr_id) {
+                if (isset($parentFeatureId) && $parentFeatureId) {
                     $hotelFeatures = new HotelFeatures();
                     $update_prnt_ftr = $hotelFeatures->updateHotelFeatureInfoByParentFeatureId(
-                        $prnt_ftr_id,
-                        array('name'=>$parent_feature, 'position'=>$pos)
+                        $parentFeatureId,
+                        array('name'=>$parentFeatureName, 'position'=>$pos)
                     );
-                    $child_features_data = $hotelFeatures->getChildFeaturesByParentFeatureId($prnt_ftr_id);
-                    if ($child_features_data) {
+                    if ($childFeaturesData = $hotelFeatures->getChildFeaturesByParentFeatureId($parentFeatureId)) {
                         $i=0;
-                        foreach ($child_features_data as $val) {
+                        foreach ($childFeaturesData as $val) {
                             $flag = 0;
-                            foreach ($child_features as $value) {
+                            foreach ($childFeatures as $value) {
                                 if (is_numeric($value)) {
                                     if ($val['id'] == $value) {
                                         $flag = 1;
                                     }
                                 } elseif ($i == 0) {
-                                    $obj_feature = new HotelFeatures();
-                                    $obj_feature->name = $value;
-                                    $obj_feature->active = 1;
-                                    $obj_feature->parent_feature_id = $prnt_ftr_id;
-                                    $obj_feature->save();
+                                    $objHotelFeatures = new HotelFeatures();
+                                    $objHotelFeatures->name = $value;
+                                    $objHotelFeatures->active = 1;
+                                    $objHotelFeatures->parent_feature_id = $parentFeatureId;
+                                    $objHotelFeatures->save();
                                 }
                             }
                             if (!$flag) {
@@ -293,21 +270,20 @@ class AdminHotelFeaturesController extends ModuleAdminController
                         );
                     }
                 } else {
-                    $obj_feature = new HotelFeatures();
-                    $obj_feature->name = $parent_feature;
-                    $obj_feature->active = 1;
-                    $obj_feature->position = $pos;
-                    $obj_feature->parent_feature_id = 0;
-                    $obj_feature->save();
-                    $parent_feature_id = $obj_feature->id;
-                    if ($parent_feature_id) {
-                        if ($child_features) {
-                            foreach ($child_features as $val) {
-                                $obj_feature = new HotelFeatures();
-                                $obj_feature->name = $this->l($val);
-                                $obj_feature->active = 1;
-                                $obj_feature->parent_feature_id = $parent_feature_id;
-                                $obj_feature->save();
+                    $objHotelFeatures = new HotelFeatures();
+                    $objHotelFeatures->name = $parentFeatureName;
+                    $objHotelFeatures->active = 1;
+                    $objHotelFeatures->position = $pos;
+                    $objHotelFeatures->parent_feature_id = 0;
+                    $objHotelFeatures->save();
+                    if ($parentFeatureId = $objHotelFeatures->id) {
+                        if ($childFeatures) {
+                            foreach ($childFeatures as $val) {
+                                $objHotelFeatures = new HotelFeatures();
+                                $objHotelFeatures->name = $this->l($val);
+                                $objHotelFeatures->active = 1;
+                                $objHotelFeatures->parent_feature_id = $parentFeatureId;
+                                $objHotelFeatures->save();
                             }
                             Tools::redirectAdmin(
                                 self::$currentIndex.'&add'.$this->table.'&token='.$this->token.'&addfeatures=1&conf=3'
@@ -331,8 +307,8 @@ class AdminHotelFeaturesController extends ModuleAdminController
     public function ajaxProcessDeleteFeature()
     {
         $dlt_id = Tools::getValue('feature_id');
-        $obj_hotel_features = new HotelFeatures();
-        $deleted_feature = $obj_hotel_features->deleteHotelFeatures($dlt_id);
+        $objHotelFeatures = new HotelFeatures();
+        $deleted_feature = $objHotelFeatures->deleteHotelFeatures($dlt_id);
         if ($deleted_feature) {
             die('success');
         } else {

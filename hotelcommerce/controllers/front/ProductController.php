@@ -439,8 +439,7 @@ class ProductControllerCore extends FrontController
             $useTax = HotelBookingDetail::useTax();
             if (isset($hotel_id) && $hotel_id) {
                 $obj_hotel_branch = new HotelBranchInformation();
-                $hotel_info_by_id = $obj_hotel_branch->hotelBranchInfoById($hotel_id);
-
+                $hotel_info_by_id = $obj_hotel_branch->hotelBranchesInfo(false, 2, 1, $hotel_id);
                 $hotel_policies = $hotel_info_by_id['policies'];
                 $hotel_name = $hotel_info_by_id['hotel_name'];
 

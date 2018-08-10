@@ -9,7 +9,7 @@
 	<form id="{$table|escape:'htmlall':'UTF-8'}_form" class="defaultForm {$name_controller|escape:'htmlall':'UTF-8'} form-horizontal" action="{$current|escape:'htmlall':'UTF-8'}&{if !empty($submit_action)}{$submit_action|escape:'htmlall':'UTF-8'}{/if}&token={$token|escape:'htmlall':'UTF-8'}" method="post" enctype="multipart/form-data" {if isset($style)}style="{$style|escape:'htmlall':'UTF-8'}"{/if}>
 		{if count($languages) > 1}
 			<div class="col-lg-12">
-				<label class="control-label">{l s='Choose Language' mod='marketplace'}</label>
+				<label class="control-label">{l s='Choose Language' mod='hotelreservationsystem'}</label>
 				<input type="hidden" name="choosedLangId" id="choosedLangId" value="{$currentLang.id_lang}">
 				<button type="button" id="multi_lang_btn" class="btn btn-default dropdown-toggle wk_language_toggle" data-toggle="dropdown">
 					{$currentLang.name}
@@ -18,13 +18,13 @@
 				<ul class="dropdown-menu wk_language_menu" style="left:14%;top:32px;">
 					{foreach from=$languages item=language}
 						<li>
-							<a href="javascript:void(0)" onclick="showHotelLangField('{$language.name}', {$language.id_lang});">
+							<a href="javascript:void(0)" onclick="showLangField('{$language.name}', {$language.id_lang});">
 								{$language.name}
 							</a>
 						</li>
 					{/foreach}
 				</ul>
-				<p class="help-block">{l s='Change language for updating information in multiple language.' mod='marketplace'}</p>
+				<p class="help-block">{l s='Change language for updating information in multiple language.' mod='hotelreservationsystem'}</p>
 				<hr>
 			</div>
 		{/if}
@@ -77,22 +77,46 @@
 								id="hotel_name_{$language.id_lang}"
 								name="hotel_name_{$language.id_lang}"
 								value="{if isset($smarty.post.$hotel_name)}{$smarty.post.$hotel_name|escape:'htmlall':'UTF-8'}{elseif isset($edit)}{$hotel_info.hotel_name[{$language.id_lang}]|escape:'htmlall':'UTF-8'}{/if}"
-								class="form-control hotel_name_all wk_text_field_all wk_text_field_{$language.id_lang}"
+								class="form-control wk_text_field_all wk_text_field_{$language.id_lang}"
 								maxlength="128"
 								{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
 							{/foreach}
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 control-label">{l s='Short Description :' mod='hotelreservationsystem'}</label>
-						<div class="col-sm-6">
-							<textarea name="short_description" class="short_description wk_tinymce" >{if isset($edit)}{$hotel_info.short_description|escape:'htmlall':'UTF-8'}{/if}</textarea>
+						<label class="col-sm-3 control-label">
+							{l s='Short Description :' mod='hotelreservationsystem'}
+							{include file="../../../_partials/mp-form-fields-flag.tpl"}
+						</label>
+						<div class="col-lg-6">
+							{foreach from=$languages item=language}
+								{assign var="short_desc_name" value="short_description_`$language.id_lang`"}
+								<div id="short_desc_div_{$language.id_lang}" class="wk_text_field_all wk_text_field_{$language.id_lang}" {if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if}>
+									<textarea
+									name="short_description_{$language.id_lang}"
+									id="short_description_{$language.id_lang}"
+									cols="2" rows="3"
+									class="wk_tinymce form-control">{if isset($smarty.post.$short_desc_name)}{$smarty.post.$short_desc_name}{elseif isset($edit)}{$hotel_info.short_description[{$language.id_lang}]}{/if}</textarea>
+								</div>
+							{/foreach}
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 control-label">{l s='Description :' mod='hotelreservationsystem'}</label>
-						<div class="col-sm-6">
-							<textarea name="description" class="description wk_tinymce" rows="4" cols="35" >{if isset($edit)}{$hotel_info.description|escape:'htmlall':'UTF-8'}{/if}</textarea>
+						<label class="col-sm-3 control-label">
+							{l s='Description :' mod='hotelreservationsystem'}
+							{include file="../../../_partials/mp-form-fields-flag.tpl"}
+						</label>
+						<div class="col-lg-6">
+							{foreach from=$languages item=language}
+								{assign var="description" value="description_`$language.id_lang`"}
+								<div id="description_div_{$language.id_lang}" class="wk_text_field_all wk_text_field_{$language.id_lang}" {if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if}>
+									<textarea
+									name="description_{$language.id_lang}"
+									id="description_{$language.id_lang}"
+									cols="2" rows="3"
+									class="wk_tinymce form-control">{if isset($smarty.post.$description)}{$smarty.post.$description}{elseif isset($edit)}{$hotel_info.description[{$language.id_lang}]}{/if}</textarea>
+								</div>
+							{/foreach}
 						</div>
 					</div>
 					<div class="form-group">
@@ -202,9 +226,21 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 control-label">{l s='Hotel Policies :' mod='hotelreservationsystem'}</label>
-						<div class="col-sm-6">
-							<textarea name="hotel_policies" class="hotel_policies wk_tinymce" rows="4" cols="35" >{if isset($edit)}{$hotel_info.policies|escape:'htmlall':'UTF-8'}{/if}</textarea>
+						<label class="col-sm-3 control-label">
+							{l s='Hotel Policies :' mod='hotelreservationsystem'}
+							{include file="../../../_partials/mp-form-fields-flag.tpl"}
+						</label>
+						<div class="col-lg-6">
+							{foreach from=$languages item=language}
+								{assign var="policies" value="policies_`$language.id_lang`"}
+								<div id="policies_div_{$language.id_lang}" class="wk_text_field_all wk_text_field_{$language.id_lang}" {if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if}>
+									<textarea
+									name="policies_{$language.id_lang}"
+									id="policies_{$language.id_lang}"
+									cols="2" rows="3"
+									class="wk_tinymce form-control">{if isset($smarty.post.$policies)}{$smarty.post.$policies}{elseif isset($edit)}{$hotel_info.policies[{$language.id_lang}]}{/if}</textarea>
+								</div>
+							{/foreach}
 						</div>
 					</div>
 					{if isset($enabledDisplayMap) && $enabledDisplayMap}

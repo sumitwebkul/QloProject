@@ -37,26 +37,26 @@ class HotelBranchFeatures extends ObjectModel
 
     /**
      * [deleteBranchFeaturesByHotelId : For deleting features of a hotel by hotel id]
-     * @param  [int] $htl_id [Hotel's id , which hotel's features to be deleted]
+     * @param  [int] $idHotel [Hotel's id , which hotel's features to be deleted]
      * @return [Boolean] [true if deleted or false if no deleted]
      */
-    public function deleteBranchFeaturesByHotelId($htl_id)
+    public function deleteBranchFeaturesByHotelId($idHotel)
     {
-        return Db::getInstance()->delete('htl_branch_features', '`id_hotel`='.$htl_id);
+        return Db::getInstance()->delete('htl_branch_features', '`id_hotel` = '.(int) $idHotel);
     }
 
     /**
      * [assignFeaturesToHotel : For assigning Hotel features to a hotel]
-     * @param  [int] $id_hotel [Hotel's id , To which features to be assigned]
+     * @param  [int] $idHotel [Hotel's id , To which features to be assigned]
      * @param  [Array] $features [array of features to be assigned to the hotel]
      * @return [Boolean]           [true]
      */
-    public function assignFeaturesToHotel($id_hotel, $features)
+    public function assignFeaturesToHotel($idHotel, $features)
     {
         if ($features) {
             foreach ($features as $feature) {
                 $obj_htl_features = new HotelBranchFeatures();
-                $obj_htl_features->id_hotel = $id_hotel;
+                $obj_htl_features->id_hotel = $idHotel;
                 $obj_htl_features->feature_id = $feature;
                 $obj_htl_features->save();
             }
