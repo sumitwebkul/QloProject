@@ -51,7 +51,6 @@
 					</label>
 					<div class="col-sm-4">
 						{foreach from=$languages item=language}
-							{assign var="parent_ftr" value="parent_ftr_`$language.id_lang`"}
 							<input type="text"
 							id="parent_ftr_{$language.id_lang}"
 							name="parent_ftr_{$language.id_lang}"
@@ -71,16 +70,40 @@
 				<div class="form-group row">
 					<label class="col-sm-3 control-label">
 						{l s='Child Features' mod='hotelreservationsystem'}
-						{include file="../../../_partials/mp-form-fields-flag.tpl"}
 					</label>
 					<div class="col-sm-4">
 						<input type="text" placeholder="Enter child feature name" class="child_ftr" name="child_ftr">
 						<p class="error_text" id="chld_ftr_err_p"></p>
-						<div class="form-group added_child_features">
+						<div class="form-group dummy_child_feature hidden">
+							{foreach from=$languages item=language}
+								<input type="text"
+								id="child_features_{$language.id_lang}"
+								name="child_features_{$language.id_lang}[]"
+								class="form-control wk_text_field_all wk_text_field_{$language.id_lang}"
+								maxlength="128"
+								{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
+							{/foreach}
 						</div>
 					</div>
 					<div class="col-sm-4">
 						<button type="button" class='col-sm-2 btn btn-primary add_feature_to_list'>{l s='Add' mod='hotelreservationsystem'}</button>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-3 control-label text-right">
+						{include file="../../../_partials/mp-form-fields-flag.tpl"}
+					</label>
+					<div class="col-sm-4">
+						<div class="form-group dummy_child_feature">
+							{foreach from=$languages item=language}
+								<input type="text"
+								id="child_features_{$language.id_lang}"
+								name="child_features_{$language.id_lang}[]"
+								class="form-control wk_text_field_all wk_text_field_{$language.id_lang}"
+								maxlength="128"
+								{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
+							{/foreach}
+						</div>
 					</div>
 				</div>
 			</div>
