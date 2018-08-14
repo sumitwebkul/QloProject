@@ -22,7 +22,7 @@
 		<i class="icon-plus"></i>&nbsp {l s='Add New Features' mod='hotelreservationsystem'}
 	</div>
 	<div class="panel-content">
-		<form method="post" action="{$link->getAdminLink('AdminHotelFeatures')}">
+		<form id="{$table|escape:'htmlall':'UTF-8'}_form" class="defaultForm {$name_controller|escape:'htmlall':'UTF-8'} form-horizontal" action="{$current|escape:'htmlall':'UTF-8'}&{if !empty($submit_action)}{$submit_action|escape:'htmlall':'UTF-8'}{/if}&token={$token|escape:'htmlall':'UTF-8'}" method="post" enctype="multipart/form-data">
 			{if count($languages) > 1}
 				<div class="col-sm-12">
 					<label class="control-label">{l s='Choose Language' mod='hotelreservationsystem'}</label>
@@ -50,10 +50,15 @@
 						{include file="../../../_partials/mp-form-fields-flag.tpl"}
 					</label>
 					<div class="col-sm-4">
+						{if isset($edit)}
+							<input type="hidden" name="id" value="{$featureInfo.id}" />
+						{/if}
 						{foreach from=$languages item=language}
+							{assign var="parent_ftr_name" value="parent_ftr_name_`$language.id_lang`"}
 							<input type="text"
-							id="parent_ftr_{$language.id_lang}"
-							name="parent_ftr_{$language.id_lang}"
+							id="parent_ftr_name_{$language.id_lang}"
+							name="parent_ftr_name_{$language.id_lang}"
+							value="{if isset($smarty.post.$parent_ftr_name)}{$smarty.post.$parent_ftr_name|escape:'htmlall':'UTF-8'}{elseif isset($edit)}{$featureInfo.name[{$language.id_lang}]|escape:'htmlall':'UTF-8'}{/if}"
 							class="form-control wk_text_field_all wk_text_field_{$language.id_lang}"
 							maxlength="128"
 							{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
@@ -63,58 +68,57 @@
 				<div class="form-group row">
 					<label class="col-sm-3 control-label">{l s='Position' mod='hotelreservationsystem'}</label>
 					<div class="col-sm-4">
-						<input type="text" name="position" class="position" placeholder="{l s='Feature position' mod='hotelreservationsystem'}" class="form-control"/>
+						<input type="text" name="position" class="position" placeholder="{l s='Feature position' mod='hotelreservationsystem'}" class="form-control" value="{if isset($smarty.post.position)}{$smarty.post.position|escape:'htmlall':'UTF-8'}{elseif isset($edit)}{$featureInfo.position|escape:'htmlall':'UTF-8'}{/if}"/>
 						<p class="error_text" id="pos_err_p"></p>
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-sm-3 control-label">
 						{l s='Child Features' mod='hotelreservationsystem'}
+						{include file="../../../_partials/mp-form-fields-flag.tpl"}
 					</label>
 					<div class="col-sm-4">
-						<input type="text" placeholder="Enter child feature name" class="child_ftr" name="child_ftr">
+						<input type="text" placeholder="Enter child feature name" class="child_ftr_name" name="child_ftr_name">
 						<p class="error_text" id="chld_ftr_err_p"></p>
-						<div class="form-group dummy_child_feature hidden">
-							{foreach from=$languages item=language}
-								<input type="text"
-								id="child_features_{$language.id_lang}"
-								name="child_features_{$language.id_lang}[]"
-								class="form-control wk_text_field_all wk_text_field_{$language.id_lang}"
-								maxlength="128"
-								{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
-							{/foreach}
-						</div>
 					</div>
 					<div class="col-sm-4">
 						<button type="button" class='col-sm-2 btn btn-primary add_feature_to_list'>{l s='Add' mod='hotelreservationsystem'}</button>
 					</div>
 				</div>
-				<div class="form-group row">
-					<label class="col-sm-3 control-label text-right">
-						{include file="../../../_partials/mp-form-fields-flag.tpl"}
-					</label>
-					<div class="col-sm-4">
-						<div class="form-group dummy_child_feature">
-							{foreach from=$languages item=language}
-								<input type="text"
-								id="child_features_{$language.id_lang}"
-								name="child_features_{$language.id_lang}[]"
-								class="form-control wk_text_field_all wk_text_field_{$language.id_lang}"
-								maxlength="128"
-								{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
-							{/foreach}
-						</div>
-					</div>
+				<div class="added_child_features_container">
+					{if isset($edit) && $edit && isset($featureInfo.child_features) && $featureInfo.child_features}
+						{foreach from=$featureInfo.child_features item=child_feature}
+							<div class="child_feature_row row">
+								<label class="col-sm-3 control-label text-right">
+								</label>
+								<div class="col-sm-4">
+									{foreach from=$languages item=language}
+										<input type="text"
+										value="{$child_feature.name[{$language.id_lang}]|escape:'htmlall':'UTF-8'}"
+										name="child_features_{$language.id_lang}[]"
+										class="form-control wk_text_field_all wk_text_field_{$language.id_lang}"
+										maxlength="128"
+										{if $currentLang.id_lang != $language.id_lang}style="display:none;"{/if} />
+									{/foreach}
+								</div>
+								<div class="col-sm-4">
+									<a href="#" class="remove-chld-ftr btn btn-default">
+										<i class="icon-trash"></i>
+									</a>
+								</div>
+							</div>
+						{/foreach}
+					{/if}
 				</div>
 			</div>
 			<div class="panel-footer">
 				<a href="{$link->getAdminLink('AdminHotelFeatures')|escape:'html':'UTF-8'}" class="btn btn-default">
 					<i class="process-icon-cancel"></i>{l s='Cancel' mod='hotelreservationsystem'}
 				</a>
-				<button type="submit" name="submitAdd{$table|escape:'html':'UTF-8'}" class="btn btn-default pull-right">
+				<button type="submit" name="submitHtlFeatures" class="btn btn-default pull-right submit_feature">
 					<i class="process-icon-save"></i> {l s='Save' mod='hotelreservationsystem'}
 				</button>
-				<button type="submit" name="submitAdd{$table|escape:'html':'UTF-8'}AndStay" class="btn btn-default pull-right">
+				<button type="submit" name="submitHtlFeaturesAndStay" class="btn btn-default pull-right submit_feature">
 					<i class="process-icon-save"></i> {l s='Save and stay' mod='hotelreservationsystem'}
 				</button>
 			</div>

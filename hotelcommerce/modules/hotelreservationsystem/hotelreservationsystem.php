@@ -327,7 +327,7 @@ class hotelreservationsystem extends Module
     public function hookActionObjectLanguageAddAfter($params)
     {
         if ($newIdLang = $params['object']->id) {
-            $langTables = array('htl_room_type_feature_pricing', 'htl_branch_info');
+            $langTables = array('htl_room_type_feature_pricing', 'htl_branch_info', 'htl_features');
             //If Admin update new language when we do entry in module all lang tables.
             HotelHelper::updateLangTables($newIdLang, $langTables);
 
@@ -365,6 +365,7 @@ class hotelreservationsystem extends Module
         $this->installTab('AdminOtherHotelModulesSetting', 'other hotel configuration', false, false);
         $this->installTab('AdminPaymentsSetting', 'payments configuration', false, false);
         $this->installTab('AdminHotelFeaturePricesSettings', 'feature pricing configuration', false, false);
+        $this->installTab('AdminAssignHotelFeatures', 'Assign Hotel Features', false, false);
 
         return true;
     }
@@ -460,24 +461,29 @@ class hotelreservationsystem extends Module
     {
         return Db::getInstance()->execute(
             'DROP TABLE IF EXISTS
+            `'._DB_PREFIX_.'htl_room_type`,
             `'._DB_PREFIX_.'htl_room_information`,
-            `'._DB_PREFIX_.'htl_image`,
-            `'._DB_PREFIX_.'htl_features`,
-            `'._DB_PREFIX_.'htl_branch_features`,
             `'._DB_PREFIX_.'htl_branch_info`,
+            `'._DB_PREFIX_.'htl_branch_info_lang`,
+            `'._DB_PREFIX_.'htl_image`,
+            `'._DB_PREFIX_.'htl_branch_features`,
+            `'._DB_PREFIX_.'htl_features`,
+            `'._DB_PREFIX_.'htl_features_lang`,
             `'._DB_PREFIX_.'htl_booking_detail`,
             `'._DB_PREFIX_.'htl_room_status`,
+            `'._DB_PREFIX_.'htl_cart_booking_data`,
             `'._DB_PREFIX_.'htl_order_status`,
             `'._DB_PREFIX_.'htl_room_allotment_type`,
-            `'._DB_PREFIX_.'htl_cart_booking_data`,
-            `'._DB_PREFIX_.'htl_order_refund_stages`,
-            `'._DB_PREFIX_.'htl_order_refund_info`,
-            `'._DB_PREFIX_.'htl_order_refund_rules`,
-            `'._DB_PREFIX_.'htl_customer_adv_payment`,
             `'._DB_PREFIX_.'htl_advance_payment`,
-            `'._DB_PREFIX_.'htl_room_type`,
+            `'._DB_PREFIX_.'htl_customer_adv_payment`,
+            `'._DB_PREFIX_.'htl_customer_adv_product_payment`,
+            `'._DB_PREFIX_.'htl_order_refund_rules`,
+            `'._DB_PREFIX_.'htl_order_refund_info`,
+            `'._DB_PREFIX_.'htl_order_restrict_date`,
             `'._DB_PREFIX_.'htl_room_type_feature_pricing`,
-            `'._DB_PREFIX_.'htl_order_restrict_date`'
+            `'._DB_PREFIX_.'htl_room_type_feature_pricing_lang`,
+            `'._DB_PREFIX_.'htl_room_disable_dates`,
+            `'._DB_PREFIX_.'htl_order_refund_stages`'
         );
     }
 

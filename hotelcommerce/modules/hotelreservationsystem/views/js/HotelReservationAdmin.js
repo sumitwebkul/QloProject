@@ -126,80 +126,53 @@ $(document).ready(function() {
     });
 
     $('.add_feature_to_list').on('click', function() {
-        if ($('.child_ftr').val() != '') {
+        if ($('.child_ftr_name').val() != '') {
             $("#chld_ftr_err_p").text('');
-            var html = '<div class="child-feature-div">';
-                html += '<div class="col-sm-3"></div>';
-                html += '<div class="col-sm-6">';
-                    html += '<input class="chld_ftr_arr" name="child_featurs[]" type="text" value="' + $('.child_ftr').val() + '">';
+
+            var html = '<div class="row child_feature_row">';
+                html += '<label class="col-sm-3 control-label text-right">';
+                html += '</label>';
+                html += '<div class="col-sm-4">';
+                $.each(languages, function(key, language) {
+                        html += '<input type="text"';
+                        html += ' value="'+$('.child_ftr_name').val()+'"';
+                        html += ' name="child_features_'+language.id_lang+'[]"';
+                        html += ' class="form-control wk_text_field_all wk_text_field_'+language.id_lang+'"';
+                        html += ' maxlength="128"';
+                        if (currentLang.id_lang != language.id_lang) {
+                            html += ' style="display:none;"';
+                        }
+                        html += ' />';
+                    });
                 html += '</div>';
-                html += '<div class="col-sm-1">';
-                    html += '<a style="color: #555;" href="#" class="pull-right remove-chld-ftr btn btn-default">';
-                    html += '<i class="icon-trash"></i></a>';
+                html += '<div class="col-sm-4">';
+                    html += '<a href="#" class="remove-chld-ftr btn btn-default">';
+                        html += '<i class="icon-trash"></i>';
+                    html += '</a>';
                 html += '</div>';
             html += '</div>';
-            $('.added_child_features').append(html);
-            $('.child_ftr').val('');
+            $('.added_child_features_container').append(html);
+            $('.child_ftr_name').val('');
         } else {
             $("#chld_ftr_err_p").text(chld_ftr_text_err);
         }
     });
 
-    $(".admin_submit_feature").on('click', function(e) {
-        var err = 0;
+    $(".submit_feature").on('click', function(e) {
         $(".error_text").text('');
         if ($('.parent_ftr').val() == '') {
             $("#prnt_ftr_err_p").text(prnt_ftr_err);
-            err = 1;
+            return false;
         }
         if ($('.position').val() != '' && !$.isNumeric($('.position').val())) {
             $("#pos_err_p").text(pos_numeric_err);
-            err = 1;
-        }
-        if ($('.chld_ftr_arr').length < 1) {
-            $("#chld_ftr_err_p").text(chld_ftr_err);
-            err = 1;
-        }
-        if (err) {
             return false;
         }
     });
 
-    $('body').on('click', '.remove-chld-ftr', function() {
-        $(this).parents('.child-feature-div').remove();
-    });
-
-    $('#basicModal_addNewFeature').on('hidden.bs.modal', function(e) {
-        $('.parent_ftr').val('');
-        $('.parent_ftr_id').val('');
-        $('.position').val('');
-        $('.added_child_features').empty();
-        $(".error_text").text('');
-    });
-
-    $('.edit_feature').on('click', function(e) {
+    $('body').on('click', '.remove-chld-ftr', function(e) {
         e.preventDefault();
-        $('.added_child_features').empty();
-        var feature = $(this).attr('data-feature');
-        var dat = JSON.parse(feature);
-        $('.parent_ftr').val(dat.name);
-        $('.parent_ftr_id').val(dat.id);
-        $('.position').val(dat.position);
-        $.each(dat.children, function(key, value) {
-            var html = '<div class="child-feature-div row">';
-                html += '<div class="col-sm-3"></div>';
-                html += '<div class="edit_chld_ftr_div col-sm-6">';
-                    html += '<input class="chld_ftr_arr" name="child_featurs[]" type="text" value="' + value.name + '">';
-                html += '</div>';
-                html += '<div class="col-sm-1">';
-                    html += '<a href="#" class="pull-right remove-chld-ftr btn btn-default">';
-                        html += '<i class="icon-trash"></i>';
-                    html += '</a>';
-                html += '</div>';
-            html += '</div>';
-            $('.added_child_features').append(html);
-        });
-        $('#basicModal_addNewFeature').modal('show');
+        $(this).parents('.child_feature_row').remove();
     });
 
     /* ---- Book Now page Admin ---- */

@@ -93,13 +93,19 @@ CREATE TABLE IF NOT EXISTS `PREFIX_htl_branch_features` (
 
 CREATE TABLE IF NOT EXISTS `PREFIX_htl_features` (
 	`id` int(10) unsigned NOT NULL auto_increment,
-	`name` varchar(255) NOT NULL,
 	`parent_feature_id` int(10) unsigned NOT NULL,
 	`position` int(10) unsigned NOT NULL,
 	`active` int(2) NOT NULL DEFAULT '0',
 	`date_add` datetime NOT NULL,
 	`date_upd` datetime NOT NULL,
 	PRIMARY KEY (`id`)
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `PREFIX_htl_features_lang` (
+	`id` int(10) unsigned NOT NULL,
+	`id_lang` int(10) unsigned NOT NULL,
+	`name` varchar(255) NOT NULL,
+	PRIMARY KEY (`id`, `id_lang`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `PREFIX_htl_booking_detail` (

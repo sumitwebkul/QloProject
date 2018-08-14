@@ -67,10 +67,10 @@ class HotelBranchInformation extends ObjectModel
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false),
             //lang fields
-            'policies' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true,),
-            'hotel_name' => array('type' => self::TYPE_STRING, 'lang' => true,),
-            'description' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true,),
-            'short_description' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true,),
+            'policies' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true),
+            'hotel_name' => array('type' => self::TYPE_STRING, 'lang' => true),
+            'description' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true),
+            'short_description' => array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'lang' => true),
     ), );
 
     protected $webserviceParameters = array(

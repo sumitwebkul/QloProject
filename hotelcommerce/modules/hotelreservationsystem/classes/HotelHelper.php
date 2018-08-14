@@ -173,10 +173,14 @@ class HotelHelper
                 'Vegetarian Food / Jain Food Available'
             ),
         );
+        // lang fields
+        $languages = Language::getLanguages(false);
         $i = 1;
         foreach ($parent_features_arr as $key => $value) {
             $obj_feature = new HotelFeatures();
-            $obj_feature->name = $key;
+            foreach ($languages as $lang) {
+                $obj_feature->name[$lang['id_lang']] = $key;
+            }
             $obj_feature->active = 1;
             $obj_feature->position = $i;
             $obj_feature->parent_feature_id = 0;
@@ -184,7 +188,9 @@ class HotelHelper
             $parent_feature_id = $obj_feature->id;
             foreach ($value as $val) {
                 $obj_feature = new HotelFeatures();
-                $obj_feature->name = $val;
+                foreach ($languages as $lang) {
+                    $obj_feature->name[$lang['id_lang']] = $val;
+                }
                 $obj_feature->active = 1;
                 $obj_feature->parent_feature_id = $parent_feature_id;
                 $obj_feature->save();
@@ -394,9 +400,9 @@ class HotelHelper
             $obj_hotel_info->hotel_name[$lang['id_lang']] = 'The Hotel Prime';
             $obj_hotel_info->short_description[$lang['id_lang']] = 'Nice place to stay';
             $obj_hotel_info->description[$lang['id_lang']] = 'Nice place to stay';
-            $obj_hotel_info->policies[$lang['id_lang']] = '1. intelligentsia tattooed pop-up salvia asymmetrical mixtape 
-            meggings tousled ramps VHS cred. 2. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled 
-            ramps VHS cred. 3. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred. 
+            $obj_hotel_info->policies[$lang['id_lang']] = '1. intelligentsia tattooed pop-up salvia asymmetrical mixtape
+            meggings tousled ramps VHS cred. 2. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled
+            ramps VHS cred. 3. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred.
             4. intelligentsia tattooed pop-up salvia asymmetrical mixtape meggings tousled ramps VHS cred.';
         }
 
