@@ -4,8 +4,12 @@
 
 ## Added features
 
-+ [CO] : Module is now made multilang.
++ [CO] : index.php added/Updated in all folders
 + [CO] : License.txt added.
++ [CO] : License added in every file.
++ [CO] : logo.gif file added.
+
++ [CO] : Module is now made multilang.
 + [CO] : htl_features_block_data_lang added for multilang.
 
 

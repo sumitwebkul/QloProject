@@ -69,6 +69,7 @@ class AdminFeaturesModuleSettingController extends ModuleAdminController
                 'title' => $this->l('Amenity Image'),
                 'align' => 'center',
                 'callback' => 'getAmenityImage',
+                'search' => false,
             ),
             'feature_title' => array(
                 'title' => $this->l('Amenity Title'),

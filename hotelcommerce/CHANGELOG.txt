@@ -4,46 +4,46 @@
 
 ## Added Features:
 
+[+] CO : Qloapps is now GDPR compatible (changes are made in Qloapps according to Qloapps GDPR module).
+[+] CO : wkfooterpaymentblock :: Created a controller where admin will be able to create payment Blocks.
+[+] CO : wkfooterpaymentblock :: Admin will be able to enter Name , image and status of the payment block.
+[+] CO : wkfooterpaymentblock :: Admin will be able to position the payment blocks and payment image blocks will be shown to the customer as per their positions.
 
+[+] FO : On contact us page, design is changed.
 [+] FO : On contact us page contact header, contact content, global address are now dynamic. Enter values from AdminGeneralSettingsController.
 
-[+] FO : On contact us page page designed is changed.
-
 [+] BO : Configuration to show/hide only one active hotel is added in location search panel in Hotel General Settings.
-
-[+] CO : Qloapps is now GDPR compatible.
-
-[+] CO : wkfooterpaymentblock :: Created a controller where admin will be able to create payment Blocks.
-
-[+] CO : wkfooterpaymentblock :: Admin will be able to enter Name , image and status of the payment block.
-
-[+] CO : wkfooterpaymentblock :: Admin will be able to position the payment blocks and payment image blocks will be shown to the customer as per their positions.
 
 
 ## Improved/changed features:
 
-[+] BO : Seperate configuration panel is made for location search panel in Hotel General Settings.
-[+] CO : Tax name will shown in the invoices now. (For GST purposes) - (enable tax breakdown is mandatory)
+[+] CO : Missing multilang fields added where needed in Qloapps.
+[+] CO : Tax name will be shown in the invoices now. (For GST purposes) - (enable tax breakdown is mandatory)
 [+] CO : logo.gif needed in the modules (module author:webkul)
-[+] CO : Removed prestashop from all the pages and emails of qloapps.
-[+] CO : Changed all links of qloapps according to the qloapps.com.
+[+] CO : Removed prestashop from all the pages and emails of Qloapps.
+[+] CO : Changed all links of Qloapps according to the qloapps.com.
 [+] CO : Stopped sending info to prestashop while installation.
+
+[+] BO : Seperate configuration panel is made for location search panel in Hotel General Settings.
 
 
 ## Bug/Issues Resolved:
 
+[-] CO : Resolved :: Theme compilation issue on ajax while Qloapps installation
+[-] CO : Resolved :: Notice on Calls to functions Product::getProducts() in wkhoteleoom and Product::getSimpleProducts() in HotelHelper.php while installation of Qloapps.[Trying to get property of non-object]
+
+[-] CO : Resolved :: hotelreservationsystem - Parent:: replaced with parent:: in classes/hotelHotelBranchInformation.php which was creating problems in installation.
+
+[-] CO : Resolved :: RecursiveDirectoryIterator::__construct(/var/www/html/themes/hotel-theme/): failed to open dir While installation.
+
 [-] BO : Resolved :: hotelreservationsystem:: Hotel images not saved while saving hotel details.
 [-] BO : Resolved :: hotelreservationsystem - $max_phone_digit is undefined issue resolved on hotel creation form.
 [-] BO : Resolved :: hotelreservationsystem:: HotelBookingDetail.php : phone number sent as string '0987654321'from 0987654321. Giving error while installing Qloapps with php7.0.0 .
+
 [-] BO : Resolved :: wktestimonialblock:: Error while saving or updating testimonials by admin.
-[-] BO : Resolved :: array_column is removed from AdminProductController.
+[-] BO : Resolved :: array_column is removed from AdminProductController [php version compatibility issue].
 
 [-] FO : Resolved :: Undefined index: total_rooms_in_cart at blockcart.tpl.
-
-[-] CO : Resolved :: RecursiveDirectoryIterator::__construct(/var/www/html/themes/hotel-theme/): failed to open dir While installation.
-[-] CO : Resolved :: Notice on Calls to functions Product::getProducts() in wkhoteleoom and Product::getSimpleProducts() in HotelHelper.php while installation of Qloapps.[Trying to get property of non-object]
-[-] CO : Resolved :: Theme compilation issue on ajax while Qloapps installation
-[-] CO : Resolved :: hotelreservationsystem - Parent:: replaced with parent:: in classes/hotelHotelBranchInformation.php which was creating problems in installation.
 
 
 ####################################

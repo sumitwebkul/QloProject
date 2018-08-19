@@ -517,7 +517,7 @@ class hotelreservationsystem extends Module
             'WK_ADVANCED_PAYMENT_INC_TAX',
             'WK_GOOGLE_ACTIVE_MAP',
             'WK_MAP_HOTEL_ACTIVE_ONLY',
-            'WK_DISPLAY_ONLY_ACTIVE_HOTEL'
+            'WK_HOTEL_NAME_ENABLE'
         );
         foreach ($configKeys as $key) {
             if (!Configuration::deleteByName($key)) {

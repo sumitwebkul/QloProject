@@ -17,10 +17,6 @@
   height: 100%;
   width: 100%;
 }
-.header-rmsearch-inner-wrapper #htl_name {
-  cursor: default;
-  background-color: #fff;
-}
 .header-rmsearch-primary {
   display: table-cell;
   vertical-align: middle;

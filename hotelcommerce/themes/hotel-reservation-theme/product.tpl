@@ -22,6 +22,7 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
+
 {include file="$tpl_dir./errors.tpl"}
 {if $errors|@count == 0}
 	{if !isset($priceDisplayPrecision)}
@@ -76,7 +77,7 @@
 								{else}
 									col-sm-6 col-lg-3
 								{/if}">
-		                            <input type="text" class="form-control header-rmsearch-input {if $totalActiveHotels <= 1}default-cursor{/if}"  id="hotel_location" name="hotel_location" autocomplete="off" placeholder="Hotel Location" {if isset($search_data['location'])}value="{$search_data['location']}"{/if} {if $totalActiveHotels <= 1}disabled{/if}>
+		                            <input type="text" class="form-control header-rmsearch-input" id="hotel_location" name="hotel_location" autocomplete="off" placeholder="Hotel Location" {if isset($search_data['location'])}value="{$search_data['location']}"{/if}>
 		                            <div class="dropdown">
 		                                <ul class="location_search_results_ul"></ul>
 		                            </div>
@@ -88,7 +89,12 @@
 							{else}
 								col-sm-3
 							{/if}">
-								{if isset($all_hotels_info) && $totalActiveHotels > 1}
+								{if !show_only_active_htl}
+									<input type="hidden" id="max_order_date" name="max_order_date" value="{$all_hotels_info[0]['max_order_date']}">
+									<input type="hidden" id="hotel_cat_id" name="hotel_cat_id" value="{$all_hotels_info[0]['id_category']}">
+									<input type="hidden" id="id_hotel" name="id_hotel" value="{$all_hotels_info[0]['id']}">
+									<input type="text" id="htl_name" class="form-control header-rmsearch-input" value="{$all_hotels_info[0]['hotel_name']}" readonly>
+								{else}
 									<div class="dropdown">
 										<button class="form-control header-rmsearch-input {if isset($error) && $error == 1}error_border{/if}" type="button" data-toggle="dropdown">
 											{if isset($search_data)}
@@ -114,11 +120,6 @@
 											{/if}
 										</ul>
 									</div>
-								{else}
-									<input type="hidden" id="max_order_date" name="max_order_date" value="{$all_hotels_info[0]['max_order_date']}">
-									<input type="hidden" id="hotel_cat_id" name="hotel_cat_id" value="{$all_hotels_info[0]['id_category']}">
-									<input type="hidden" id="id_hotel" name="id_hotel" value="{$all_hotels_info[0]['id']}">
-									<input type="text" id="htl_name" class="form-control header-rmsearch-input" value="{$all_hotels_info[0]['hotel_name']}" readonly>
 								{/if}
 		                    </div>
 		                    <div class="form-group
@@ -176,9 +177,7 @@
 		        </div>
 		    </div>
 		</div>
-
 		<!-- end -->
-
 		<!-- left infos-->
 		<div class="pb-left-column col-xs-12 col-sm-8 col-md-8" style="border:1px solid #cccccc">
 			<div class="room_hotel_name_block">
@@ -302,16 +301,18 @@
 									&nbsp;<img width="15px" src="{$ftr_img_src}{$ftr_v.value}">
 								{/foreach}
 							</div>
-							<div class="info_margin_div">
-								<div class="room_info_heading">
-									<span>{l s='Hotel Features'}</span>
+							{if isset($hotel_features) && $hotel_features}
+								<div class="info_margin_div">
+									<div class="room_info_heading">
+										<span>{l s='Hotel Features'}</span>
+									</div>
+									<div class="room_info_content row">
+										{foreach from=$hotel_features key=ftr_k item=ftr_v}
+											<span class="col-sm-4">{$ftr_v}</span>
+										{/foreach}
+									</div>
 								</div>
-								<div class="room_info_content row">
-									{foreach from=$hotel_features key=ftr_k item=ftr_v}
-										<span class="col-sm-4">{$ftr_v}</span>
-									{/foreach}
-								</div>
-							</div>
+							{/if}
 							<!-- <div class="info_margin_div">
 								<div class="room_info_heading">
 									<span>{l s='Rooms'}</span>

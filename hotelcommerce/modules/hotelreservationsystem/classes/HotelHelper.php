@@ -209,7 +209,7 @@ class HotelHelper
         brooklyn cardigan kitsch fap narwhal organic flexitarian.';
 
         Configuration::updateValue('WK_HOTEL_LOCATION_ENABLE', 1);
-        Configuration::updateValue('WK_DISPLAY_ONLY_ACTIVE_HOTEL', 1);
+        Configuration::updateValue('WK_HOTEL_NAME_ENABLE', 1);
         Configuration::updateValue('WK_ROOM_LEFT_WARNING_NUMBER', 10);
         Configuration::updateValue('WK_HTL_ESTABLISHMENT_YEAR', 2010);
 

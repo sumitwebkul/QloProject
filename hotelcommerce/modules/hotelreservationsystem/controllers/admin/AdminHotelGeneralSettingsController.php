@@ -36,6 +36,8 @@ class AdminHotelGeneralSettingsController extends ModuleAdminController
         if (!$hotelsInfo = $objHotelInfo->hotelBranchesInfo(false, 1)) {
             $hotelsInfo = array();
         }
+        $hotelNameDisable = (count($hotelsInfo) > 1 ? true : false);
+        $locationDisable = ((count($hotelsInfo) < 2) && !Configuration::get('WK_HOTEL_NAME_ENABLE')) ? true : false;
         $this->fields_options = array(
             'hotelsearchpanel' => array(
                 'title' => $this->l('Hotel Search Setting'),
@@ -44,6 +46,7 @@ class AdminHotelGeneralSettingsController extends ModuleAdminController
                         'title' => $this->l('Enable Hotel Location'),
                         'cast' => 'intval',
                         'type' => 'bool',
+                        'disabled' => $locationDisable,
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -56,12 +59,12 @@ class AdminHotelGeneralSettingsController extends ModuleAdminController
                         ),
                         'hint' => $this->l('whether you want to show Hotel Location field on hotel search panel.'),
                     ),
-                    'WK_DISPLAY_ONLY_ACTIVE_HOTEL' => array(
+                    'WK_HOTEL_NAME_ENABLE' => array(
                         'title' => $this->l('Display Hotel Name'),
                         'cast' => 'intval',
                         'type' => 'bool',
                         'default' => '0',
-                        'disabled' => (count($hotelsInfo) > 1 ? true : false),
+                        'disabled' => $hotelNameDisable,
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -275,7 +278,6 @@ class AdminHotelGeneralSettingsController extends ModuleAdminController
                 $this->errors[] = $this->l('Hotel short description is required at least in ').
                 $objDefaultLanguage['name'];
             }
-
             if ($_FILES['htl_header_image']['name']) {
                 $this->validateHotelHeaderImage($_FILES['htl_header_image']);
 
@@ -289,11 +291,9 @@ class AdminHotelGeneralSettingsController extends ModuleAdminController
                     }
                 }
             }
-
             if (Tools::getValue('WK_ADVANCED_PAYMENT_GLOBAL_MIN_AMOUNT') <= 0) {
                 $this->errors[] = $this->l('Minimum partial payment percentage should be more than 0.');
             }
-
             if (Tools::getValue('WK_GOOGLE_ACTIVE_MAP')) {
                 if (!Tools::getValue('WK_GOOGLE_API_KEY')) {
                     $this->errors[] = $this->l('Please enter Google API key.');
@@ -317,7 +317,7 @@ class AdminHotelGeneralSettingsController extends ModuleAdminController
                 $objHotelInfo = new HotelBranchInformation();
                 if ($hotelsInfo = $objHotelInfo->hotelBranchesInfo(false, 1)) {
                     if (count($hotelsInfo) > 1) {
-                        $_POST['WK_DISPLAY_ONLY_ACTIVE_HOTEL'] = 1;
+                        $_POST['WK_HOTEL_NAME_ENABLE'] = 1;
                     }
                 }
                 foreach ($languages as $lang) {
@@ -340,6 +340,9 @@ class AdminHotelGeneralSettingsController extends ModuleAdminController
                     }
                 }
                 parent::postProcess();
+                if (empty($this->errors)) {
+                    Tools::redirectAdmin(self::$currentIndex.'&conf=6&token='.$this->token);
+                }
             }
         } else {
             parent::postProcess();

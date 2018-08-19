@@ -148,7 +148,8 @@ class AdminAssignHotelFeaturesController extends ModuleAdminController
     public function processSave()
     {
         if ($editId = Tools::getValue('edit_hotel_id')) {
-            Db::getInstance()->delete('htl_branch_features', 'id_hotel='.(int)$editId);
+            $objBranchFeatures = new HotelBranchFeatures();
+            $objBranchFeatures->deleteBranchFeaturesByHotelId($editId);
         }
         if (!$hotelFeatures = Tools::getValue('hotel_fac')) {
             $this->errors[] = $this->l('Please select at least one feature to assign to a hotel.');

@@ -69,6 +69,7 @@ class AdminTestimonialsModuleSettingController extends ModuleAdminController
                 'title' => $this->l('Person Image'),
                 'align' => 'center',
                 'callback' => 'getTestimonialImage',
+                'search' => false,
             ),
             'active' => array(
                 'title' => $this->l('Active'),

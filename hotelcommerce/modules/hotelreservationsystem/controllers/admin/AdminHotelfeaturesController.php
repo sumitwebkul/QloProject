@@ -126,6 +126,7 @@ class AdminHotelFeaturesController extends ModuleAdminController
             if (!count($this->errors)) {
                 if (isset($parentFeatureId) && $parentFeatureId) {
                     $objHotelFeatures = new HotelFeatures($parentFeatureId);
+                    $childFeatureIds = Tools::getValue('child_feature_id');
                     foreach ($languages as $lang) {
                         if (!trim(Tools::getValue('parent_ftr_name_'.$lang['id_lang']))) {
                             $objHotelFeatures->name[$lang['id_lang']] = Tools::getValue(
@@ -142,31 +143,58 @@ class AdminHotelFeaturesController extends ModuleAdminController
                     $objHotelFeatures->parent_feature_id = 0;
                     $objHotelFeatures->save();
 
-                    if ($objHotelFeatures->deleteHotelFeatures($parentFeatureId, 1)) {
-                        if ($childFeaturesDefLang) {
-                            foreach ($childFeaturesDefLang as $key => $childftr) {
-                                $objHotelFeatures = new HotelFeatures();
-                                foreach ($languages as $lang) {
-                                    if (!trim(Tools::getValue('child_features_'.$lang['id_lang'])[$key])) {
-                                        $objHotelFeatures->name[$lang['id_lang']] = $childftr;
-                                    } else {
-                                        $objHotelFeatures->name[$lang['id_lang']] = Tools::getValue(
-                                            'child_features_'.$lang['id_lang']
-                                        )[$key];
-                                    }
+                    if ($childFeaturesDefLang) {
+                        // get previous child features of the parent feature
+                        if ($childFeaturesInfo = $objHotelFeatures->getChildFeaturesByParentFeatureId(
+                            $parentFeatureId
+                        )) {
+                            $prevChildIds = array();
+                            foreach ($childFeaturesInfo as $row) {
+                                $prevChildIds[] = $row['id'];
+                            }
+                        }
+                        $usedFeatures = array();
+                        foreach ($childFeaturesDefLang as $key => $childftr) {
+                            $objHotelFeatures = new HotelFeatures();
+                            // We will only create new child features other wise edit the previous child feature
+                            if ($prevChildIds
+                                && isset($childFeatureIds[$key])
+                                && in_array($childFeatureIds[$key], $prevChildIds)
+                            ) {
+                                $objHotelFeatures = new HotelFeatures($childFeatureIds[$key]);
+                                // enter child feature id in the used child feature
+                                $usedFeatures[] = $childFeatureIds[$key];
+                            }
+                            foreach ($languages as $lang) {
+                                if (!trim(Tools::getValue('child_features_'.$lang['id_lang'])[$key])) {
+                                    $objHotelFeatures->name[$lang['id_lang']] = $childftr;
+                                } else {
+                                    $objHotelFeatures->name[$lang['id_lang']] = Tools::getValue(
+                                        'child_features_'.$lang['id_lang']
+                                    )[$key];
                                 }
-                                $objHotelFeatures->active = 1;
-                                $objHotelFeatures->parent_feature_id = $parentFeatureId;
-                                $objHotelFeatures->save();
                             }
-                            if (Tools::isSubmit('submitHtlFeaturesAndStay')) {
-                                Tools::redirectAdmin(
-                                    self::$currentIndex.'&id='.(int) $parentFeatureId.'&update'.$this->table.
-                                    '&conf=4&token='.$this->token
-                                );
-                            } else {
-                                Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
+                            $objHotelFeatures->active = 1;
+                            $objHotelFeatures->parent_feature_id = $parentFeatureId;
+                            $objHotelFeatures->save();
+                        }
+                        // delete the child features which are not used now
+                        $notUsedChilds = array_diff($prevChildIds, $usedFeatures);
+                        if ($notUsedChilds = array_diff($prevChildIds, $usedFeatures)) {
+                            foreach ($notUsedChilds as $value) {
+                                if ($value) {
+                                    $objHotelFeatures = new HotelFeatures($value);
+                                    $objHotelFeatures->delete();
+                                }
                             }
+                        }
+                        if (Tools::isSubmit('submitHtlFeaturesAndStay')) {
+                            Tools::redirectAdmin(
+                                self::$currentIndex.'&id='.(int) $parentFeatureId.'&update'.$this->table.
+                                '&conf=4&token='.$this->token
+                            );
+                        } else {
+                            Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
                         }
                     } else {
                         $this->errors[] = $this->l('Some error has been occurred while saving features.');
@@ -242,6 +270,7 @@ class AdminHotelFeaturesController extends ModuleAdminController
     public function setMedia()
     {
         parent::setMedia();
+
         $this->addJs(_MODULE_DIR_.'hotelreservationsystem/views/js/HotelReservationAdmin.js');
         $this->addCSS(_MODULE_DIR_.'hotelreservationsystem/views/css/HotelReservationAdmin.css');
     }

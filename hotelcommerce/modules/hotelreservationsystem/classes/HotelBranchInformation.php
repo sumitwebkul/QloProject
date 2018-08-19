@@ -332,7 +332,7 @@ class HotelBranchInformation extends ObjectModel
             if ($hotelsInfo = $this->hotelBranchesInfo(false, 1)) {
                 // If more than one hotel then
                 if (count($hotelsInfo) > 1) {
-                    Configuration::updateValue('WK_DISPLAY_ONLY_ACTIVE_HOTEL', 1);
+                    Configuration::updateValue('WK_HOTEL_NAME_ENABLE', 1);
                 }
             }
         } else {

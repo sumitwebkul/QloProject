@@ -1,3 +1,22 @@
+{*
+* 2010-2018 Webkul.
+*
+* NOTICE OF LICENSE
+*
+* All right is reserved,
+* Please go through this link for complete license : https://store.webkul.com/license.html
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade this module to newer
+* versions in the future. If you wish to customize this module for your
+* needs please refer to https://store.webkul.com/customisation-guidelines/ for more information.
+*
+*  @author    Webkul IN <support@webkul.com>
+*  @copyright 2010-2018 Webkul IN
+*  @license   https://store.webkul.com/license.html
+*}
+
 <div class="row margin-lr-0 block" id="filter_search_block">
     <div class="filter_header">
         <div class="col-sm-12">
@@ -14,7 +33,7 @@
             {if isset($location_enable) && $location_enable}
                 <div class="form-group hotel_location_div">
                     <label class="control-label" for="">{l s='Hotel Location' mod='wkroomsearchblock'}</label>
-                    <input class="form-control {if $totalActiveHotels <= 1}default-cursor{/if}" placeholder="Enter a city, state, country name" type="text" id="hotel_location" name="hotel_location" autocomplete="off" {if isset($search_data)}value="{$search_data['location']}" city_cat_id="{$search_data['parent_data']['id_category']}"{/if} {if $totalActiveHotels <= 1}disabled{/if}/>
+                    <input class="form-control" placeholder="Enter a city, state, country name" type="text" id="hotel_location" name="hotel_location" autocomplete="off" {if isset($search_data)}value="{$search_data['location']}" city_cat_id="{$search_data['parent_data']['id_category']}"{/if}/>
                     <div class="dropdown">
                         <ul class="location_search_results_ul"></ul>
                     </div>
@@ -23,7 +42,7 @@
 
             <div class="form-group htl_nm_cont {if $totalActiveHotels <= 1 && !$show_only_active_htl}hidden{/if}">
                 <label class="control-label" for="">{l s='Hotel Name' mod='wkroomsearchblock'}</label>
-                {if isset($all_hotels_info) && $totalActiveHotels > 1}
+                {if isset($all_hotels_info) && $totalActiveHotels}
                     <div class="dropdown">
                         <button class="btn btn-default hotel_cat_id_btn dropdown-toggle" type="button" data-toggle="dropdown">
                             {if isset($search_data)}
@@ -48,11 +67,6 @@
                             {/if}
                         </ul>
                     </div>
-                {else}
-                    <input type="hidden" id="max_order_date" name="max_order_date" value="{$all_hotels_info[0]['max_order_date']}">
-                    <input type="hidden" id="hotel_cat_id" name="hotel_cat_id" value="{$all_hotels_info[0]['id_category']}">
-                    <input type="hidden" id="id_hotel" name="id_hotel" value="{$all_hotels_info[0]['id']}">
-                    <input type="text" id="htl_name" class="form-control header-rmsearch-input" value="{$all_hotels_info[0]['hotel_name']}" readonly>
                 {/if}
                 <p class="error_msg" id="select_htl_error_p"></p>
             </div>

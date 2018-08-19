@@ -54,35 +54,35 @@
 					{/if}
 				</div>
 			</div>
-			{assign var=i value=1}
-			{foreach from=$features_list item=value}
-			<div class="accordion">
-				<div class="accordion-section">
-					<a class="accordion-section-title" href="#accordion{$i}"><span class="icon-plus"></span>&nbsp&nbsp{l s={$value.name} mod='hotelreservationsyatem'}</a>
-					<div id="accordion{$i}" class="accordion-section-content">
-						<table id="" class="table" style="max-width:100%">
-							<tbody>
-								{if isset($value.children) && $value.children}
-									{foreach from=$value.children item=val}
-										<tr>
-											<td class="border_top border_bottom border_bold">
-												<span class=""> {l s={$val.name} mod='hotelreservationsyatem'} </span>
-											</td>
-											<td style="">
-												<input name="hotel_fac[]" type="checkbox" value="{$val.id}" class="form-control" {if isset($edit) && $val.selected}checked='true'{/if}>
-											</td>
-										</tr>
-									{/foreach}
-								{/if}
-							</tbody>
-						</table>
+			{if isset($features_list) && $features_list}
+				{assign var=i value=1}
+				{foreach from=$features_list item=value}
+					<div class="accordion">
+						<div class="accordion-section">
+							<a class="accordion-section-title" href="#accordion{$i}"><span class="icon-plus"></span>&nbsp&nbsp{l s={$value.name} mod='hotelreservationsyatem'}</a>
+							<div id="accordion{$i}" class="accordion-section-content">
+								<table id="" class="table" style="max-width:100%">
+									<tbody>
+										{if isset($value.children) && $value.children}
+											{foreach from=$value.children item=val}
+												<tr>
+													<td class="border_top border_bottom border_bold">
+														<span class=""> {l s={$val.name} mod='hotelreservationsyatem'} </span>
+													</td>
+													<td style="">
+														<input name="hotel_fac[]" type="checkbox" value="{$val.id}" class="form-control" {if isset($edit) && $val.selected}checked='true'{/if}>
+													</td>
+												</tr>
+											{/foreach}
+										{/if}
+									</tbody>
+								</table>
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-			{assign var=i value=$i+1}
-			{foreachelse}
-				<!-- code for foreachelse -->
-			{/foreach}
+					{assign var=i value=$i+1}
+				{/foreach}
+			{/if}
 			<div class="panel-footer">
 				<a href="{$link->getAdminLink('AdminHotelFeatures')|escape:'html':'UTF-8'}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel' mod='hotelreservationsystem'}</a>
 				<button type="submit" name="submitAddhtl_features" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Assign' mod='hotelreservationsystem'}</button>

@@ -42,6 +42,16 @@ class HotelFeatures extends ObjectModel
         )
     );
 
+    public function delete()
+    {
+        if ($id = $this->id) {
+            if (Db::getInstance()->delete('htl_branch_features', '`feature_id` = '.(int) $id)) {
+                return parent::delete();
+            }
+        }
+        return false;
+    }
+
     /**
      * [getFeatureInfoById :: To get feature in formation by its id]
      * @param  [int] $id [description]

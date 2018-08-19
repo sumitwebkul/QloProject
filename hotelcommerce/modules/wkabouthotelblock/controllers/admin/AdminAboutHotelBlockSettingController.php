@@ -229,8 +229,7 @@ class AdminAboutHotelBlockSettingController extends ModuleAdminController
                 $this->errors[] = Tools::displayError($this->l('Please enter valid name.'));
             }
         }
-
-        if (!(Tools::getValue("id") && !$file['size'])) {
+        if (!(Tools::getValue("id_interior_image") && !$file['size'])) {
             if (!$file['size']) {
                 $this->errors[] = Tools::displayError($this->l('Hotel Interior Image Required.'));
             } elseif ($file['error']) {
@@ -244,14 +243,14 @@ class AdminAboutHotelBlockSettingController extends ModuleAdminController
 
         /*==== Validations ====*/
         if (!count($this->errors)) {
-            if (Tools::getValue("id")) {
-                $objHtlInteriorImg = new WkHotelInteriorImage(Tools::getValue("id"));
+            if (Tools::getValue("id_interior_image")) {
+                $objHtlInteriorImg = new WkHotelInteriorImage(Tools::getValue("id_interior_image"));
             } else {
                 $objHtlInteriorImg = new WkHotelInteriorImage();
                 $objHtlInteriorImg->position = WkHotelInteriorImage::getHigherPosition();
             }
 
-            if (Tools::getValue("id") && $file['size'] && !$file['error']) {
+            if (Tools::getValue("id_interior_image") && $file['size'] && !$file['error']) {
                 unlink(_PS_MODULE_DIR_.$this->module->name.'/views/img/hotel_interior/'.$objHtlInteriorImg->name);
             }
 
@@ -271,13 +270,13 @@ class AdminAboutHotelBlockSettingController extends ModuleAdminController
             $objHtlInteriorImg->active = Tools::getValue('active');
             $objHtlInteriorImg->save();
 
-            if (Tools::getValue("id")) {
+            if (Tools::getValue("id_interior_image")) {
                 Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
             } else {
                 Tools::redirectAdmin(self::$currentIndex.'&conf=3&token='.$this->token);
             }
         } else {
-            if (Tools::getValue("id")) {
+            if (Tools::getValue("id_interior_image")) {
                 $this->display = 'edit';
             } else {
                 $this->display = 'add';

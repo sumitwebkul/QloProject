@@ -1588,6 +1588,10 @@ abstract class ModuleCore
      */
     final public static function isModuleTrusted($module_name)
     {
+        // return currently always trusted as 1 because we will not chcek trust according to prestshop
+        // @TODO in future trust will be checked according to Qloapps addons
+        return 1;
+
         static $trusted_modules_list_content = null;
         static $modules_list_content = null;
         static $default_country_modules_list_content = null;

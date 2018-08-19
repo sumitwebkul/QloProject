@@ -699,6 +699,7 @@ class InstallModelInstall extends InstallAbstractModel
     public function getAddonsModulesList($params = array())
     {
         $addons_modules = array();
+        return $addons_modules;
         $content = Tools::addonsRequest('install-modules', $params);
         $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
 

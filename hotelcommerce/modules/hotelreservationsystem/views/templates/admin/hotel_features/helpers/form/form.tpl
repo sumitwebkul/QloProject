@@ -92,6 +92,7 @@
 								<label class="col-sm-3 control-label text-right">
 								</label>
 								<div class="col-sm-4">
+									<input type="hidden" name="child_feature_id[]" value="{$child_feature.id}" />
 									{foreach from=$languages item=language}
 										<input type="text"
 										value="{$child_feature.name[{$language.id_lang}]|escape:'htmlall':'UTF-8'}"

@@ -545,7 +545,7 @@ class ProductControllerCore extends FrontController
                         'ratting_img_path' => _MODULE_DIR_.'hotelreservationsystem/views/img/Slices/icons-sprite.png',
                         'total_available_rooms' => $total_available_rooms,
                         'all_hotels_info' => $hotel_info,
-                        'show_only_active_htl' => Configuration::get('WK_DISPLAY_ONLY_ACTIVE_HOTEL'),
+                        'show_only_active_htl' => Configuration::get('WK_HOTEL_NAME_ENABLE'),
                         'location_enable' => $locationEnabled,
                         'total_price' => $total_price,
                         'product_controller_url' => $this->context->link->getPageLink('product'),

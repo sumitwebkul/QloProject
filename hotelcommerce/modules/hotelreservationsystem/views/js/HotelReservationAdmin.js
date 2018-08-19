@@ -134,16 +134,17 @@ $(document).ready(function() {
                 html += '</label>';
                 html += '<div class="col-sm-4">';
                 $.each(languages, function(key, language) {
-                        html += '<input type="text"';
-                        html += ' value="'+$('.child_ftr_name').val()+'"';
-                        html += ' name="child_features_'+language.id_lang+'[]"';
-                        html += ' class="form-control wk_text_field_all wk_text_field_'+language.id_lang+'"';
-                        html += ' maxlength="128"';
-                        if (currentLang.id_lang != language.id_lang) {
-                            html += ' style="display:none;"';
-                        }
-                        html += ' />';
-                    });
+                    html += '<input type="hidden" name="child_feature_id[]" value="0" />';
+                    html += '<input type="text"';
+                    html += ' value="'+$('.child_ftr_name').val()+'"';
+                    html += ' name="child_features_'+language.id_lang+'[]"';
+                    html += ' class="form-control wk_text_field_all wk_text_field_'+language.id_lang+'"';
+                    html += ' maxlength="128"';
+                    if (currentLang.id_lang != language.id_lang) {
+                        html += ' style="display:none;"';
+                    }
+                    html += ' />';
+                });
                 html += '</div>';
                 html += '<div class="col-sm-4">';
                     html += '<a href="#" class="remove-chld-ftr btn btn-default">';
@@ -971,6 +972,17 @@ $(document).ready(function() {
             return [true, ""];
         }
     }
+
+    // search panel configuration
+    $("input[name='WK_HOTEL_NAME_ENABLE']").on('change', function () {
+        if (parseInt($(this).val())) {
+            $("input[name='WK_HOTEL_LOCATION_ENABLE']").attr('disabled', false);
+        } else {
+            $("input[name='WK_HOTEL_LOCATION_ENABLE']").attr('disabled', 'disabled');
+            $("input[name='WK_HOTEL_LOCATION_ENABLE']").attr('checked', "checked");
+        }
+    });
+
 });
 
 function showFeaturePriceRuleLangField(lang_iso_code, id_lang)
