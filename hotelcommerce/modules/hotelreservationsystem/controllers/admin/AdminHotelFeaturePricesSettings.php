@@ -309,10 +309,11 @@ class AdminHotelFeaturePricesSettingsController extends ModuleAdminController
             } else {
                 if ($specificDate == '') {
                     $this->errors[] = $this->l('Please choose Date from for the feature price.');
-                } elseif (!Validate::isDate($specificDate)) {
+                }
+                $specificDate = date('Y-m-d', strtotime($specificDate));
+                if (!Validate::isDate($specificDate)) {
                     $this->errors[] = $this->l('Invalid Date From.');
                 }
-                $specificDate = date('Y-m-d', strtotime(Tools::getValue('specific_date')));
             }
 
             if (!$impactValue) {
