@@ -1072,12 +1072,6 @@ $(document).ready(function() {
         beforeShowDay: function (date) {
             return highlightDateBorder($("#room_check_in").val(), date);
         },
-        onClose: function(selectedDate) {
-            var date_format = selectedDate.split("-");
-            var selectedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date(date_format[2], date_format[1] - 1, date_format[0])));
-            selectedDate.setDate(selectedDate.getDate() + 1);
-            $("#room_check_out").datepicker("option", "minDate", selectedDate);
-        },
         onSelect: function(selectedDate, inst) {
             var date_from_format = selectedDate.split("-");
             var selectedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date(date_from_format[2], date_from_format[1] - 1, date_from_format[0])));
@@ -1180,7 +1174,7 @@ $(document).ready(function() {
         showOtherMonths: true,
         dateFormat: 'dd-mm-yy',
         beforeShow: function (input, instance) {
-            var date_to = $('#check_in_time').val();
+            var date_to = $('#room_check_in').val();
             if (typeof date_to != 'undefined' && date_to != '') {
                 var date_format = date_to.split("-");
                 var selectedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date(date_format[2], date_format[1] - 1, date_format[0])));
@@ -1195,12 +1189,6 @@ $(document).ready(function() {
         },
         beforeShowDay: function (date) {
             return highlightDateBorder($("#room_check_out").val(), date);
-        },
-        onClose: function(selectedDate) {
-            var date_format = selectedDate.split("-");
-            var selectedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date(date_format[2], date_format[1] - 1, date_format[0])));
-            selectedDate.setDate(selectedDate.getDate() - 1);
-            $("#room_check_in").datepicker("option", "maxDate", selectedDate);
         },
         onSelect: function(dateText, inst) {
             var date_from_format = $('#room_check_in').val().split("-");

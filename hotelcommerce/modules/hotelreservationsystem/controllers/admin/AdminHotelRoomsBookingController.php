@@ -150,7 +150,6 @@ class AdminHotelRoomsBookingController extends ModuleAdminController
 
             $date_from = date("Y-m-d", strtotime($date_from));
             $date_to = date("Y-m-d", strtotime($date_to));
-
             $hotel_id = Tools::getValue('hotel_id');
             $room_type = Tools::getValue('room_type');
 
@@ -226,6 +225,12 @@ class AdminHotelRoomsBookingController extends ModuleAdminController
             $check_calender_var = 1;
             $date_from = date('Y-m-d');
             $date_to = date('Y-m-t');
+
+            // if date from is the last date of the month
+            if (strtotime($date_from) == strtotime($date_to)) {
+                $date_to = date('Y-m-d', strtotime('+1 day', strtotime($date_to)));
+            }
+
             $obj_htl_info = new HotelBranchInformation();
             $htl_info = $obj_htl_info->hotelBranchesInfo(false, 1);
             $hotel_id = $htl_info[0]['id'];

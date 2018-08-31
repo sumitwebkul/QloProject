@@ -115,15 +115,13 @@ class HotelImage extends ObjectModel
                     }
                     $objHtlImage->hotel_image_id = $randName;
                     if ($objHtlImage->save()) {
-                        if (count($hotelImages) == 1) {
-                            $addedImage = array(
-                                'id_image' => $objHtlImage->id,
-                                'cover' => $objHtlImage->cover,
-                                'image_url' => _MODULE_DIR_.'hotelreservationsystem/views/img/hotel_img/'.
-                                $randName.'.jpg',
-                            );
-                            return $addedImage;
-                        }
+                        $addedImage = array(
+                            'id_image' => $objHtlImage->id,
+                            'cover' => $objHtlImage->cover,
+                            'image_url' => _MODULE_DIR_.'hotelreservationsystem/views/img/hotel_img/'.
+                            $randName.'.jpg',
+                        );
+                        return $addedImage;
                     }
                 }
             }

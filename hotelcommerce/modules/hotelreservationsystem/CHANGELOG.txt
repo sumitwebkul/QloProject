@@ -32,13 +32,15 @@
 
 ## Bug/Issues Resolved:
 
-[+] CO : Resolved :: hotelreservationsystem:: Hotel images not saved while saving hotel details.
+[-] CO : Resolved :: hotelreservationsystem:: Hotel images not saved while saving hotel details.
 
 [-] BO : Resolved :: hotelreservationsystem - $max_phone_digit is undefined issue resolved on hotel creation form.
 
 [-] CO : Resolved :: hotelreservationsystem - Parent:: replaced with parent:: in classes/hotelHotelBranchInformation.php which was creating problems in installation.
 
-[+] CO : Resolved :: hotelreservationsystem:: HotelBookingDetail.php : phone number sent as string '0987654321'from 0987654321. Giving error while installing Qloapps with php7.0.0 .
+[-] CO : Resolved :: hotelreservationsystem:: HotelBookingDetail.php : phone number sent as string '0987654321'from 0987654321. Giving error while installing Qloapps with php7.0.0 .
+
+[-] BO : Resolved :: If current date is the last date then data to is change to the next date while Book now from admin.
 
 ## Update Policy
 
