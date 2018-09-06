@@ -143,7 +143,11 @@
 							<span class="cart_total_values">$ 1000.00</span>
 						</p>
 						<p>
-							<span>Total Quantity Of Rooms</span> -
+							<span>Hotel GST</span> -
+							<span class="cart_total_values">$ 1000.00</span>
+						</p>
+						<p>
+							<span>Hotel Charges</span> -
 							<span class="cart_total_values">$ 1000.00</span>
 						</p>
 						<p>
@@ -154,13 +158,82 @@
 							<span>Total Quantity Of Rooms</span> -
 							<span class="cart_total_values">$ 1000.00</span>
 						</p>
-						<p>
-							<span>Total Quantity Of Rooms</span> -
-							<span class="cart_total_values">$ 1000.00</span>
+						{if $use_taxes && $show_taxes && $total_tax != 0 }
+							{if $priceDisplay != 0}
+								<p class="cart_total_price">
+									<span>{if $display_tax_label}{l s='Total (tax excl.)'}{else}{l s='Total'}{/if}</span> -
+									<span class="cart_total_values">{displayPrice price=$total_price_without_tax}</span>
+								</p>
+							{/if}
+							<p class="cart_total_tax">
+								<span>{l s='Tax'}</span> -
+								<span class="cart_total_values">{displayPrice price=$total_tax}</span>
+							</p>
+						{/if}
+						{if $use_taxes && $show_taxes && $total_tax != 0 }
+							<p class="cart_total_price">
+								<span>{if $display_tax_label}{l s='Total (tax excl.)'}{else}{l s='Total'}{/if}</span> -
+								<span class="cart_total_values">{displayPrice price=$total_price_without_tax}</span>
+							</p>
+							{if $priceDisplay != 0}
+							<tr class="table_tfoot table_total_tr cart_total_price">
+								<td colspan="4" class="text-right"></td>
+								<td colspan="3" class="price" id="total_price_without_tax">{displayPrice price=$total_price_without_tax}</td>
+							</tr>
+							{/if}
+							<tr class="table_tfoot cart_total_tax">
+								<td colspan="4" class="text-right">{l s='Tax'}</td>
+								<td colspan="3" class="price" id="total_tax">{displayPrice price=$total_tax}</td>
+							</tr>
+						{/if}
+						<p class="total_discount_block {if $total_discounts == 0} unvisible{/if}">
+							<span>
+								{if $display_tax_label}
+									{if $use_taxes && $priceDisplay == 0}
+										{l s='Total vouchers (tax incl.)'}
+									{else}
+										{l s='Total vouchers (tax excl.)'}
+									{/if}
+								{else}
+									{l s='Total vouchers'}
+								{/if}
+							</span> -
+							<span class="cart_total_values">
+								{if $use_taxes && $priceDisplay == 0}
+									{assign var='total_discounts_negative' value=$total_discounts * -1}
+								{else}
+									{assign var='total_discounts_negative' value=$total_discounts_tax_exc * -1}
+								{/if}
+								{displayPrice price=$total_discounts_negative}
+							</span>
 						</p>
-						<p>
-							<span>Total Quantity Of Rooms</span> -
-							<span class="cart_total_values">$ 1000.00</span>
+						{if isset($customer_adv_dtl)}
+							<p>
+								<span>{l s='Advance Payment Amount'}</span> -
+								<span class="cart_total_values">{displayPrice price=$adv_amount}</span>
+							</p>
+							<p>
+								<span>{l s='Due Amount'}</span> -
+								<span class="cart_total_values">{displayPrice price=$customer_adv_dtl['due_amount']}</span>
+							</p>
+						{/if}
+						<p class="cart_final_total_block">
+							{if isset($customer_adv_dtl)}
+								<span>Total Quantity Of Rooms</span> -
+								<span class="cart_total_values">{displayPrice price=$customer_adv_dtl['total_to_be_paid']}</span>
+							{else}
+								<span>{l s='Total'}</span> -
+								<span class="cart_total_values">
+									{if $use_taxes}
+										{displayPrice price=$total_price}
+									{else}
+										{displayPrice price=$total_price_without_tax}
+									{/if}
+								</span>
+								<div class="hookDisplayProductPriceBlock-price">
+									{hook h="displayCartTotalPriceLabel"}
+								</div>
+							{/if}
 						</p>
 					</div>
 					<div class="col-sm-12 card cart_voucher_detail_block">

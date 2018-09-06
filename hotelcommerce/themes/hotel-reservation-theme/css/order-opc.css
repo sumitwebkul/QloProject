@@ -304,7 +304,7 @@
 #order-detail-content .unit_price_block {
 	display: inline-block;
     padding: 10px 15px 0px;
-    background: #f2f2f2f2;
+    background-color: #f2f2f2f2;
     border-radius: 6px;
 }
 #order-detail-content .room_info_text {
@@ -339,7 +339,7 @@
 	font-size: 18px;
 }
 #order-detail-content .proceed_btn_block .button {
-	background: #1292FF;
+	background-color: #1292FF;
 	box-shadow: 0 10px 20px 0 rgba(0,0,0,0.34);
 	border-radius: 2px;
 	padding: 5px 55px;
@@ -364,7 +364,7 @@
 .cart_voucher_detail_block span.voucher_name {
 	font-size: 14px;
 	color: #459C3D;
-	background: #FFFFFF;
+	background-color: #FFFFFF;
 	border: 2px dashed #459C3D;
 	padding: 10px;
 	margin-right: 10px;
@@ -374,7 +374,7 @@
 	color: #777777;
 }
 .cart_voucher_detail_block span.voucher_apply_state {
-	background: #EDEDED;
+	background-color: #EDEDED;
 	padding: 13px 15px;
     border-radius: 4px;
     color: #459C3D;
@@ -386,3 +386,14 @@
 .cart_total_detail_block .cart_total_values {
 	float: right;
 }
+.cart_total_detail_block .total_discount_block {
+	color: #459C3D;
+}
+.cart_total_detail_block .cart_final_total_block {
+	line-height: 40px;
+}
+.cart_total_detail_block .cart_final_total_block > .cart_total_values {
+	font-size: 28px;
+	color: #003AEF;
+}
+
