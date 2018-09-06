@@ -138,52 +138,46 @@
 				<div class="col-md-4">
 					{* Total cart details, tax details, advance payment details and voucher details *}
 					<div class="col-sm-12 card cart_total_detail_block">
-						<p>Total Cart : 100</p>
-						<p>Total Cart : 100</p>
-						<p>Total Cart : 100</p>
-						<p>Total Cart : 100</p>
+						<p>
+							<span>Total Quantity Of Rooms</span> -
+							<span class="cart_total_values">$ 1000.00</span>
+						</p>
+						<p>
+							<span>Total Quantity Of Rooms</span> -
+							<span class="cart_total_values">$ 1000.00</span>
+						</p>
+						<p>
+							<span>Total Quantity Of Rooms</span> -
+							<span class="cart_total_values">$ 1000.00</span>
+						</p>
+						<p>
+							<span>Total Quantity Of Rooms</span> -
+							<span class="cart_total_values">$ 1000.00</span>
+						</p>
+						<p>
+							<span>Total Quantity Of Rooms</span> -
+							<span class="cart_total_values">$ 1000.00</span>
+						</p>
+						<p>
+							<span>Total Quantity Of Rooms</span> -
+							<span class="cart_total_values">$ 1000.00</span>
+						</p>
 					</div>
 					<div class="col-sm-12 card cart_voucher_detail_block">
 						<p class="cart_voucher_head">{l s='Apply Coupon'}</p>
-						<p><span>{l s='Have promocode ?'}</span></p>
-						<p>
-							{if sizeof($discounts)}
-								{foreach $discounts as $discount}
-									{if ((float)$discount.value_real == 0 && $discount.free_shipping != 1) || ((float)$discount.value_real == 0 && $discount.code == '')}
-										{continue}
-									{/if}
-									<tr class="table_body cart_discount {if $discount@last}last_item{elseif $discount@first}first_item{else}item{/if}" id="cart_discount_{$discount.id_discount}">
-										<td class="cart_discount_name" colspan="3">{$discount.name}</td>
-										<td class="cart_discount_price">
-											<span class="price-discount">
-											{if !$priceDisplay}{displayPrice price=$discount.value_real*-1}{else}{displayPrice price=$discount.value_tax_exc*-1}{/if}
-											</span>
-										</td>
-										<td class="cart_discount_delete">1</td>
-										<td colspan="2"></td>
-										<td class="price_discount_del text-center">
-											{if strlen($discount.code)}
-												<a
-													href="{if $opc}{$link->getPageLink('order-opc', true)}{else}{$link->getPageLink('order', true)}{/if}?deleteDiscount={$discount.id_discount}"
-													class="price_discount_delete"
-													title="{l s='Delete'}">
-													<i class="icon-trash"></i>
-												</a>
-											{/if}
-										</td>
-										<td class="cart_discount_price">
-											<span class="price-discount price">{if !$priceDisplay}{displayPrice price=$discount.value_real*-1}{else}{displayPrice price=$discount.value_tax_exc*-1}{/if}</span>
-										</td>
-									</tr>
+						{if $displayVouchers}
+							<p><span>{l s='Have promocode ?'}</span></p>
+							<div id="display_cart_vouchers">
+								{foreach $displayVouchers as $voucher}
+									<span class="voucher_name" data-code="{$voucher.code|escape:'html':'UTF-8'}">
+										{$voucher.code|escape:'html':'UTF-8'} <i class="icon-times"></i>
+									</span>
+									<span class="voucher_apply_state">
+										<img src="./themes/hotel-reservation-theme/img/icon/form-ok-circle.svg" /> {l s='Applied'}
+									</span>
 								{/foreach}
-							{/if}
-							<span class="applied_voucher_name">
-								{l s='GET 50'} <i class="icon-times"></i>
-							</span>
-							<span class="voucher_apply_state">
-								<img src="./themes/hotel-reservation-theme/img/icon/form-ok-circle.svg" /> {l s='Applied'}
-							</span>
-						</p>
+							</div>
+						{/if}
 					</div>
 				</div>
 			</div>
