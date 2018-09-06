@@ -383,28 +383,32 @@ class OrderOpcControllerCore extends ParentOrderController
             }
         }
 
-        $this->context->smarty->assign(array(
-            'free_shipping' => $free_shipping,
-            'isGuest' => isset($this->context->cookie->is_guest) ? $this->context->cookie->is_guest : 0,
-            'countries' => $countries,
-            'sl_country' => (int)Tools::getCountry(),
-            'PS_GUEST_CHECKOUT_ENABLED' => Configuration::get('PS_GUEST_CHECKOUT_ENABLED'),
-            'errorCarrier' => Tools::displayError('You must choose a carrier.', false),
-            'errorTOS' => Tools::displayError('You must accept the Terms of Service.', false),
-            'isPaymentStep' => isset($_GET['isPaymentStep']) && $_GET['isPaymentStep'],
-            'genders' => Gender::getGenders(),
-            'one_phone_at_least' => (int)Configuration::get('PS_ONE_PHONE_AT_LEAST'),
-            'HOOK_CREATE_ACCOUNT_FORM' => Hook::exec('displayCustomerAccountForm'),
-            'HOOK_CREATE_ACCOUNT_TOP' => Hook::exec('displayCustomerAccountFormTop')
-        ));
+        $this->context->smarty->assign(
+            array(
+                'free_shipping' => $free_shipping,
+                'isGuest' => isset($this->context->cookie->is_guest) ? $this->context->cookie->is_guest : 0,
+                'countries' => $countries,
+                'sl_country' => (int)Tools::getCountry(),
+                'PS_GUEST_CHECKOUT_ENABLED' => Configuration::get('PS_GUEST_CHECKOUT_ENABLED'),
+                'errorCarrier' => Tools::displayError('You must choose a carrier.', false),
+                'errorTOS' => Tools::displayError('You must accept the Terms of Service.', false),
+                'isPaymentStep' => isset($_GET['isPaymentStep']) && $_GET['isPaymentStep'],
+                'genders' => Gender::getGenders(),
+                'one_phone_at_least' => (int)Configuration::get('PS_ONE_PHONE_AT_LEAST'),
+                'HOOK_CREATE_ACCOUNT_FORM' => Hook::exec('displayCustomerAccountForm'),
+                'HOOK_CREATE_ACCOUNT_TOP' => Hook::exec('displayCustomerAccountFormTop')
+            )
+        );
         $years = Tools::dateYears();
         $months = Tools::dateMonths();
         $days = Tools::dateDays();
-        $this->context->smarty->assign(array(
-            'years' => $years,
-            'months' => $months,
-            'days' => $days,
-        ));
+        $this->context->smarty->assign(
+            array(
+                'years' => $years,
+                'months' => $months,
+                'days' => $days,
+            )
+        );
 
         /* Load guest informations */
         if ($this->isLogged && $this->context->cookie->is_guest) {
@@ -447,7 +451,7 @@ class OrderOpcControllerCore extends ParentOrderController
             $this->setTemplate(_PS_THEME_DIR_ . 'order-opc-advanced.tpl');
         } else {
             if (Module::isInstalled('hotelreservationsystem')) {
-                require_once(_PS_MODULE_DIR_.'hotelreservationsystem/define.php');
+                require_once _PS_MODULE_DIR_.'hotelreservationsystem/define.php';
 
                 $obj_cart_bk_data = new HotelCartBookingData();
                 $obj_htl_bk_dtl = new HotelBookingDetail();
@@ -475,7 +479,7 @@ class OrderOpcControllerCore extends ParentOrderController
 
                             if (count($avai_rm['rm_data'][0]['data']['available']) < count($cl_val['id_rms'])) {
                                 $cartChanged = true;
-                                
+
                                 foreach ($cl_val['id_rms'] as $cr_key => $cr_val) {
                                     $isRmBooked = $obj_htl_bk_dtl->chechRoomBooked($cr_val, $cl_val['date_from'], $cl_val['date_to']);
                                     if ($isRmBooked) {
@@ -498,11 +502,10 @@ class OrderOpcControllerCore extends ParentOrderController
                         }
                     }
                     $this->context->smarty->assign('cartChanged', $cartChanged);
-                    $cart_htl_data = HotelCartBookingData::getHotelCartBookingData();
-                    if ($cart_htl_data) {
-                        $this->context->smarty->assign('cart_htl_data', $cart_htl_data);
+                    if ($cartBookingInfo = HotelCartBookingData::getHotelCartBookingData()) {
+                        $this->context->smarty->assign('cart_htl_data', $cartBookingInfo);
                     }
-                    
+
                     // For Advanced Payment
                     $advance_payment_active = Configuration::get('WK_ALLOW_ADVANCED_PAYMENT');
                     if ($advance_payment_active) {

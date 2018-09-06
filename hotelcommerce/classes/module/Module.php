@@ -42,6 +42,9 @@ abstract class ModuleCore
     /** @var array filled with known compliant PS versions */
     public $ps_versions_compliancy = array();
 
+    /** @var array filled with known compliant Qloapps versions */
+    public $qloapps_versions_compliancy = array();
+
     /** @var array filled with modules needed for install */
     public $dependencies = array();
 
@@ -231,6 +234,7 @@ abstract class ModuleCore
      */
     public function __construct($name = null, Context $context = null)
     {
+        // for Prestashop version compliancy
         if (isset($this->ps_versions_compliancy) && !isset($this->ps_versions_compliancy['min'])) {
             $this->ps_versions_compliancy['min'] = '1.4.0.0';
         }
@@ -245,6 +249,23 @@ abstract class ModuleCore
 
         if (strlen($this->ps_versions_compliancy['max']) == 3) {
             $this->ps_versions_compliancy['max'] .= '.999.999';
+        }
+
+        // for Qloapps version compliancy
+        if (isset($this->qloapps_versions_compliancy) && !isset($this->qloapps_versions_compliancy['min'])) {
+            $this->qloapps_versions_compliancy['min'] = '0.9.0.0';
+        }
+
+        if (isset($this->qloapps_versions_compliancy) && !isset($this->qloapps_versions_compliancy['max'])) {
+            $this->qloapps_versions_compliancy['max'] = _QLOAPPS_VERSION_;
+        }
+
+        if (strlen($this->qloapps_versions_compliancy['min']) == 3) {
+            $this->qloapps_versions_compliancy['min'] .= '.0.0';
+        }
+
+        if (strlen($this->qloapps_versions_compliancy['max']) == 3) {
+            $this->qloapps_versions_compliancy['max'] .= '.999.999';
         }
 
         // Load context and smarty
@@ -314,7 +335,7 @@ abstract class ModuleCore
 
         // Check PS version compliancy
         if (!$this->checkCompliancy()) {
-            $this->_errors[] = Tools::displayError('The version of your module is not compliant with your PrestaShop version.');
+            $this->_errors[] = Tools::displayError('The version of your module is not compliant with your Qloapps version.');
             return false;
         }
 
@@ -397,7 +418,11 @@ abstract class ModuleCore
 
     public function checkCompliancy()
     {
-        if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
+        if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<')
+            || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')
+            || version_compare(_QLOAPPS_VERSION_, $this->qloapps_versions_compliancy['min'], '<')
+            || version_compare(_QLOAPPS_VERSION_, $this->qloapps_versions_compliancy['max'], '>')
+        ) {
             return false;
         } else {
             return true;

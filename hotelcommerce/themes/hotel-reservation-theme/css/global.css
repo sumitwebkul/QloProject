@@ -8882,3 +8882,16 @@ hr.theme-text-underline {
 .default-cursor {
   cursor: default!important;
 }
+
+/* for checkout page design change */
+
+.card {
+  position: relative;
+  display: block;
+  margin-bottom: 30px;
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px 0 rgba(0,0,0,0.20);
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: 4px;
+  padding: 15px;
+}

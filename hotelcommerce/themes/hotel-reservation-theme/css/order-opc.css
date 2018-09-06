@@ -238,5 +238,145 @@
 .room_type_old_price {
 	text-decoration: line-through;
 	color:#979797;
-	font-size:12px; 
+	font-size:12px;
+}
+
+
+
+#order-opc .card-block-header {
+	color: #333333;
+	font-size: 20px;
+	margin-bottom: 20px;
+}
+#order-detail-content .product-name a {
+	font-size: 22px !important;
+	color: #333333 !important;
+}
+
+#order-detail-content .hotel-location {
+	font-size: 14px;
+    padding: 10px 0px 0px 0px;
+    color: #777777;
+}
+#order-detail-content .hotel-location > i {
+	font-size: 18px;
+}
+#order-detail-content .hotel-location > .htl-address-icon {
+	background-image: url(../../../modules/hotelreservationsystem/views/img/Slices/icon-contact.png);
+	padding: 1px 15px 0px 2px;
+	background-position: 1px;
+	margin-right: 5px;
+	font-size: 14px;
+}
+#order-detail-content p.room-features span {
+	white-space: nowrap;
+	line-height: 35px;
+	background-color: #eee;
+	border-radius: 12px;
+	margin-right: 10px;
+	padding: 3px 10px 7px 0px;
+	font-size: 14px;
+	color: #555555;
+}
+#order-detail-content .room_duration_block_head {
+	font-size: 12px;
+	color: #777777;
+}
+#order-detail-content .room_duration_block_value {
+	font-size: 16px;
+	color: #333333;
+}
+#order-detail-content .room_duration_block {
+	margin-bottom: 10px;
+	float: left;
+    width: 100%;
+	background: #D8EDFF;
+	border-radius: 2px;
+	padding: 10px 0px 5px 0px;
+}
+#order-detail-content .room_total_price {
+	font-size: 24px;
+	color: #333333;
+}
+#order-detail-content .room_total_price_detial {
+	font-size: 14px;
+	color: #777777;
+}
+#order-detail-content .unit_price_block {
+	display: inline-block;
+    padding: 10px 15px 0px;
+    background: #f2f2f2f2;
+    border-radius: 6px;
+}
+#order-detail-content .room_info_text {
+	font-family: OpenSans-Semibold;
+	font-size: 12px;
+	color: #777777;
+	text-transform: uppercase;
+}
+#order-detail-content .room_unit_price{
+	font-size: 24px;
+	color: #333333;
+	text-align: right;
+}
+#order-detail-content .room_unit_price span {
+	font-size: 14px;
+}
+#order-detail-content .room_unit_price span.real_price {
+	color: #777777;
+	text-decoration: line-through;
+}
+#order-detail-content .room_unit_price_detail {
+	font-size: 14px;
+	color: #777777;
+	text-align: right;
+}
+#order-detail-content .room_remove_block {
+	font-size: 14px;
+	color: #777777;
+	text-align: right;
+}
+#order-detail-content .room_remove_block i {
+	font-size: 18px;
+}
+#order-detail-content .proceed_btn_block .button {
+	background: #1292FF;
+	box-shadow: 0 10px 20px 0 rgba(0,0,0,0.34);
+	border-radius: 2px;
+	padding: 5px 55px;
+}
+#order-detail-content .proceed_btn_block .button > span {
+	font-size: 14px;
+	font-weight: 600;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	text-align: center;
+}
+.cart_voucher_detail_block {
+	font-size: 14px;
+	color: #555555;
+}
+.cart_voucher_detail_block .cart_voucher_head {
+	font-size: 12px;
+	color: #777777;
+	text-transform: uppercase;
+	font-weight: 600;
+}
+.cart_voucher_detail_block span.applied_voucher_name {
+	font-size: 14px;
+	color: #459C3D;
+	background: #FFFFFF;
+	border: 2px dashed #459C3D;
+	padding: 10px;
+	margin-right: 10px;
+}
+.cart_voucher_detail_block span.applied_voucher_name > i {
+	margin-left: 95px;
+	color: #777777;
+}
+.cart_voucher_detail_block span.voucher_apply_state {
+	background: #EDEDED;
+	padding: 13px 15px;
+    border-radius: 4px;
+    color: #459C3D;
 }
