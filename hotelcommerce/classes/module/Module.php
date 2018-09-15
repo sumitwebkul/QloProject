@@ -268,6 +268,14 @@ abstract class ModuleCore
             $this->qloapps_versions_compliancy['max'] .= '.999.999';
         }
 
+        if (strlen($this->qloapps_versions_compliancy['min']) == 5) {
+            $this->qloapps_versions_compliancy['min'] .= '.0';
+        }
+
+        if (strlen($this->qloapps_versions_compliancy['max']) == 5) {
+            $this->qloapps_versions_compliancy['max'] .= '.999';
+        }
+
         // Load context and smarty
         $this->context = $context ? $context : Context::getContext();
         if (is_object($this->context->smarty)) {

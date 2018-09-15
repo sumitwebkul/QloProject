@@ -4,6 +4,10 @@
 #order-opc {
 	line-height: 20px;
 }
+#order-opc input.form-control {
+	height: 40px;
+	border-radius: 4px;
+}
 #order-opc .box {
 	padding-bottom: 20px;
 }
@@ -26,10 +30,10 @@
 	top: -14px;
 }
 #order-opc .form-group {
-	margin-bottom: 2px;
+	margin-bottom: 10px;
 }
 #order-opc .form-group .form-control {
-	max-width: 271px;
+	max-width: 100%;
 }
 #order-opc .lost_password {
 	display: inline-block;
@@ -96,21 +100,25 @@
 	color: #3C3C3C;
 	font-weight: 400;
 }
-#voucher h4 {
-	font-size: 18px !important;
-	color: #404040 !important;
-	font-weight: 700 !important;
-}
-#voucher #discount_name {
-	width: 200px;
-	height: 35px;
-}
-#voucher button, #advanced-payment button {
+#order-opc .opc-button-medium {
 	border: none;
-	background-color: #379bf0;
-	font-size: 16px;
+	background-color: #1292FF;
+	box-shadow: 0 10px 20px 0 rgba(0,0,0,0.34);
+	border-radius: 4px;
+	font-size: 14px;
 	color: #FFFFFF;
-	font-weight: 700;
+	padding: 10px 25px;
+	font-weight: 600;
+}
+#order-opc .opc-button-default {
+	border: 1px solid #1292FF;
+	background-color: #fff;
+	box-shadow: 0 10px 20px 0 rgba(0,0,0,0.34);
+	border-radius: 4px;
+	font-size: 14px;
+	color: #1292FF;
+	padding: 10px 25px;
+	font-weight: 600;
 }
 #title {
 	font-size: 13px;
@@ -147,30 +155,13 @@
 	font-weight: 700;
 	margin-top: 5px;
 }
-#login_form_content p label {
-	font-size: 16px;
-	color: #3C3C3C;
-	font-weight: 700;
-}
-#login_form_content p input.form-control, #opc_account_form div input.form-control {
-	height: 40px;
-}
 #login_form_content a.lost_password {
 	font-weight: bold;
 	text-decoration: none;
 }
-#SubmitLogin, #submitAccount {
-	background-color: #379bf0;
-	font-size: 18px;
-	color: #FFFFFF;
-	font-weight: 700;
-	border-color: none;
-}
-#SubmitLogin:hover, #SubmitLogin:focus, #SubmitLogin:active, #submitAccount:hover, #submitAccount:focus, #submitAccount:active {
-	border-color: none;
-}
 #new_account_form fieldset div.box, #tc_cont {
 	background-color: #FFFFFF;
+	margin-bottom: 20px;
 }
 #new_account_title, #opc_account_form h3, #choose_payment_txt {
 	margin-top: 5px;
@@ -178,22 +169,21 @@
 	color: #3C3C3C;
 	font-weight: 700;
 }
-#opc_account_form div label {
-	font-size: 16px;
-	color: #3C3C3C;
-	font-weight: 700;
+#opc_new_account form label {
+	font-size: 14px;
+	color: #333333;
+	font-weight: 400;
 }
 .hard_disp_none {
 	display: none !important;
 }
 #tc_txt {
-	font-size: 16px;
-	color: #929292;
-	font-weight: 700;
+	font-size: 14px;
+	color: #333;
 }
 #tc_link {
-	font-size: 16px;
-	color: #404040;
+	font-size: 14px;
+	color: #333;
 	font-weight: 700;
 	text-decoration: none;
 }
@@ -204,14 +194,12 @@
 	clear: both;
 }
 .partial_txt {
-	font-size: 16px;
-	font-weight: 700;
-	color: #585858;
+	font-size: 14px;
+	color: #333333;
 }
 .partial_mim_cost {
 	font-size: 16px;
-	font-weight: 400;
-	color: #585858;
+	color: #333333;
 }
 #partial_data {
 	display: none;
@@ -232,16 +220,18 @@
 	height: 40px;
 }
 
-/* By Webkul */
 
+/* By Webkul */
 .room_type_old_price {
 	text-decoration: line-through;
 	color:#979797;
 	font-size:12px;
 }
-
-
-
+#order-opc .block-small-header {
+	font-size: 12px;
+	color: #777777;
+	font-weight: 600;
+}
 #order-opc .card-block-header {
 	color: #333333;
 	font-size: 20px;
@@ -308,7 +298,6 @@
     border-radius: 6px;
 }
 #order-detail-content .room_info_text {
-	font-family: OpenSans-Semibold;
 	font-size: 12px;
 	color: #777777;
 	text-transform: uppercase;
@@ -338,62 +327,94 @@
 #order-detail-content .room_remove_block i {
 	font-size: 18px;
 }
-#order-detail-content .proceed_btn_block .button {
+#order-detail-content .proceed_btn_block .button, #SubmitLogin {
 	background-color: #1292FF;
-	box-shadow: 0 10px 20px 0 rgba(0,0,0,0.34);
+	box-shadow: 0 0px 20px 0 rgba(0,0,0,0.34);
 	border-radius: 2px;
-	padding: 5px 55px;
+	padding: 5px 50px;
 }
-#order-detail-content .proceed_btn_block .button > span {
+#order-detail-content .proceed_btn_block .button > span, #SubmitLogin > span {
 	font-size: 14px;
 	font-weight: 600;
 	color: #FFFFFF;
 	text-transform: uppercase;
 	text-align: center;
 }
-.cart_voucher_detail_block {
+#order-opc .cart_voucher_detail_block {
 	font-size: 14px;
 	color: #555555;
 }
-.cart_voucher_detail_block .cart_voucher_head {
+#order-opc .cart_voucher_detail_block .cart_voucher_head {
 	font-size: 12px;
 	color: #777777;
 	text-transform: uppercase;
 	font-weight: 600;
 }
-.cart_voucher_detail_block span.voucher_name {
+#order-opc .cart_voucher_detail_block span.cart_discount_name {
 	font-size: 14px;
 	color: #459C3D;
 	background-color: #FFFFFF;
 	border: 2px dashed #459C3D;
 	padding: 10px;
-	margin-right: 10px;
+	display: inline-block;
+	width: 60%;
+	font-weight: 600;
 }
-.cart_voucher_detail_block span.voucher_name > i {
-	margin-left: 95px;
+#order-opc .cart_discount_name a.price_discount_delete {
 	color: #777777;
+	font-size: 16px;
 }
-.cart_voucher_detail_block span.voucher_apply_state {
+#order-opc .cart_voucher_detail_block .cart_applied_voucher {
+	margin-bottom: 5px;
+}
+#order-opc .cart_voucher_detail_block span.voucher_apply_state {
 	background-color: #EDEDED;
-	padding: 13px 15px;
+	padding: 10px 15px;
     border-radius: 4px;
-    color: #459C3D;
+	color: #459C3D;
+	display: inline-block;
 }
-.cart_total_detail_block {
+#order-opc .cart_total_detail_block {
 	font-size: 14px;
 	color: #333333;
 }
-.cart_total_detail_block .cart_total_values {
+#order-opc .cart_total_detail_block .cart_total_values {
 	float: right;
 }
-.cart_total_detail_block .total_discount_block {
+#order-opc .cart_total_detail_block .total_discount_block {
 	color: #459C3D;
 }
-.cart_total_detail_block .cart_final_total_block {
+#order-opc .cart_total_detail_block .cart_final_total_block {
 	line-height: 40px;
 }
-.cart_total_detail_block .cart_final_total_block > .cart_total_values {
+#order-opc .cart_total_detail_block .cart_final_total_block > .cart_total_values {
 	font-size: 28px;
 	color: #003AEF;
 }
+#order-opc .opc_advance_payment_block {
+	margin-bottom: 30px;
+}
+#order-opc #advanced-payment label > span {
+	font-size: 14px!important;
+	font-weight: normal!important;
+}
+#order-opc .already_registered_block {
+	font-size: 14px;
+	line-height: 19px;
+	color: #333333;
+}
+#order-opc .already_registered_block #openLoginFormBlock {
+	color: #003AEF;
+	font-weight: 600;
+}
 
+#new_account_form #opc_guestCheckout {
+	padding: 14px 25px;
+}
+#new_account_form #opc_createAccount {
+	padding: 14px 25px;
+	margin-left: 15px;
+}
+#order-opc #opc_new_account {
+	padding-bottom: 10px;
+}
